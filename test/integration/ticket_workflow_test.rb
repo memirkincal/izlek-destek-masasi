@@ -38,6 +38,49 @@ class TicketWorkflowTest < ActionDispatch::IntegrationTest
     assert_equal "Acme Helpdesk", created_user.organization.name
   end
 
+  test "an administrator can add a teammate to the existing workspace at any time" do
+    organization = users(:one).organization
+
+    assert_difference "User.count", 1 do
+      post team_members_path, params: {
+        user: {
+          name: "New Support Agent",
+          email_address: "new.agent@example.com",
+          role: "agent",
+          password: "TemporaryPass123!"
+        }
+      }
+    end
+
+    assert_redirected_to team_members_path
+    added_user = User.find_by!(email_address: "new.agent@example.com")
+    assert_equal organization, added_user.organization
+    assert_equal "agent", added_user.role
+
+    sign_out
+    post session_path, params: { email_address: added_user.email_address, password: "TemporaryPass123!" }
+    assert_redirected_to root_path
+  end
+
+  test "a requester cannot add teammates" do
+    requester = users(:two)
+    sign_out
+    sign_in_as(requester)
+
+    assert_no_difference "User.count" do
+      post team_members_path, params: {
+        user: {
+          name: "Unauthorized Agent",
+          email_address: "unauthorized.agent@example.com",
+          role: "agent",
+          password: "TemporaryPass123!"
+        }
+      }
+    end
+
+    assert_redirected_to root_path
+  end
+
   test "registration with an existing email shows a translated error without creating a workspace" do
     existing_email = users(:one).email_address
 
