@@ -1,4 +1,4 @@
-unless Rails.env.production?
+if Rails.env.development?
 organization = Organization.find_or_create_by!(name: "İzlek Demo")
 
 accounts = [
