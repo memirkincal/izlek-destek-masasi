@@ -1,7 +1,7 @@
 class Ticket < ApplicationRecord
   STATUSES = %w[new open solved].freeze
   PRIORITIES = %w[low normal high urgent].freeze
-  AGENTS = ["Ece Demir", "Mert Kaya", "Deniz Arslan"].freeze
+  AGENTS = [ "Ece Demir", "Mert Kaya", "Deniz Arslan" ].freeze
   FIRST_RESPONSE_SLA = 4.hours
 
   has_many :replies, dependent: :destroy
