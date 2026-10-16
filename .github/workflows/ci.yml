@@ -17,4 +17,4 @@ jobs:
       - name: Run database and workflow tests
         env:
           RAILS_ENV: test
-        run: bin/rails db:prepare test
+        run: bundle exec rails db:prepare test

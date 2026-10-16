@@ -4,8 +4,8 @@
 
 İzlek, destek taleplerini tek bir açık kuyruğa toplayan ve ekibin sıradaki işi görmesini sağlayan küçük bir destek masasıdır. İlham kaynağı Zendesk'in müşteri destek talebi iş akışıdır; İzlek bağımsız bir öğrenci projesidir ve orijinal ürünün markasını kullanmaz.
 
-**Canlı uygulama:** https://izlek-destek-masasi.onrender.com (yayın kurulumu henüz doğrulanmadı)  
-**Kaynak kodu:** https://izlek-destek-masasi.onrender.com (yayın kurulumu henüz doğrulanmadı)
+**Canlı uygulama:** Render hesabı bağlantısı tamamlanınca yayımlanacak.  
+**Kaynak kodu:** https://github.com/memirkincal/izlek-destek-masasi
 
 ## Ürünün ana iş akışı
 
