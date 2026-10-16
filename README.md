@@ -2,8 +2,8 @@
 
 [![CI](https://github.com/memirkincal/izlek-destek-masasi/actions/workflows/ci.yml/badge.svg)](https://github.com/memirkincal/izlek-destek-masasi/actions/workflows/ci.yml)
 
-**Canlı uygulama / Live app:** [izlek-destek-masasi.onrender.com](https://izlek-destek-masasi.onrender.com) — Render üzerinde canlı; son doğrulanan dağıtım `be188ff`.
-**Kaynak / Source:** [GitHub](https://github.com/memirkincal/izlek-destek-masasi)
+- **Canlı uygulama / Live app:** [izlek-destek-masasi.onrender.com](https://izlek-destek-masasi.onrender.com) — Render üzerinde canlı; son doğrulanan uygulama dağıtımı `be188ff`.
+- **Kaynak / Source:** [GitHub reposu](https://github.com/memirkincal/izlek-destek-masasi)
 
 ---
 
