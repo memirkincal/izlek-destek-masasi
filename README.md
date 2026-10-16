@@ -83,6 +83,8 @@ SLA ve durum geçişleri `travel_to` ile sabit zamanda test edilir. GitHub Actio
 
 Supabase projesi Vercel Marketplace'ten oluşturulabilir. Bu, Vercel üzerinden yönetilen ve Vercel faturasında görünen gerçek bir Supabase/PostgreSQL projesidir; ancak Marketplace entegrasyonu bağlantı değişkenlerini bağlı **Vercel** projelerine senkronlar. Rails uygulaması Vercel dışında çalışırsa `DATABASE_URL` bağlantısı Rails sunucusunun gizli ortam değişkenlerine ayrıca girilmelidir ([Supabase Vercel Marketplace rehberi](https://supabase.com/docs/guides/integrations/vercel-marketplace)).
 
+İlk kurulumu Supabase SQL Editor'dan yapmak isterseniz [db/supabase_bootstrap.sql](db/supabase_bootstrap.sql) dosyası güncel Rails tablolarını, indeksleri, yabancı anahtarları ve migration takip kayıtlarını tek seferde kurar. Yalnızca boş/yeni veritabanında bir kez çalıştırın. Sonraki şema değişikliklerinin kaynağı Rails migration dosyalarıdır.
+
 Bu depodaki mevcut dağıtım tanımı, Rails uygulamasını Render Web Service üzerinde ve PostgreSQL'i Supabase'te çalıştırır. Vercel'den Supabase oluşturmak bu mimariyle uyumludur; yalnızca DB bağlantısını Render'a güvenli biçimde kopyalamak gerekir. Rails'i gerçekten Vercel üzerinde çalıştırmak için uygulama mimarisini ayırmak (Vercel frontend + başka yerde Rails API) gerekir; bu mevcut dağıtımın bir parçası değildir. Render, bu Rails-rendered portal için doğrudan uyumlu hedeftir ([Render Rails 8 kılavuzu](https://render.com/docs/deploy-rails-8)).
 
 1. GitHub deposunu Render'a bağlayıp `render.yaml` Blueprint'ini oluşturun.
@@ -179,6 +181,8 @@ SLA and state-transition tests use `travel_to`. GitHub Actions runs migrations a
 The assignment **explicitly requires a live URL**; a local demo is insufficient. İzlek is a monolithic Rails 8 server-rendered application. Vercel's Ruby support is for beta Functions where each `.rb` file defines one HTTP handler; Vercel's Rails guide describes using Rails as an API for a separate frontend hosted on Vercel. The current Rails portal is therefore not documented as a direct Vercel deployment ([Vercel Ruby runtime](https://vercel.com/docs/functions/runtimes/ruby), [Vercel Rails guidance](https://vercel.com/kb/guide/does-vercel-support-ruby-on-rails-applications)).
 
 Supabase can be provisioned through the Vercel Marketplace. It remains a real Supabase/PostgreSQL project managed and billed through Vercel. The Marketplace syncs environment variables to connected **Vercel** projects; if Rails runs outside Vercel, copy `DATABASE_URL` securely into the Rails host yourself ([Supabase Vercel Marketplace guide](https://supabase.com/docs/guides/integrations/vercel-marketplace)).
+
+For a one-time SQL Editor setup, [db/supabase_bootstrap.sql](db/supabase_bootstrap.sql) creates the current Rails tables, indexes, foreign keys, and migration tracking records. Run it only once against a new, empty database. Future schema changes should use the Rails migration files.
 
 This repository's current deployment definition runs Rails on a Render Web Service and PostgreSQL on Supabase. Creating Supabase through Vercel fits this architecture; the database URL must be entered into Render. Running Rails itself on Vercel would require separating the app into a Vercel frontend and a Rails API hosted elsewhere, which is not part of the current deployment. Render is the direct fit for this Rails-rendered portal ([Render Rails 8 guide](https://render.com/docs/deploy-rails-8)).
 
