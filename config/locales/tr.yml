@@ -1,4 +1,20 @@
 tr:
+  activerecord:
+    attributes:
+      organization:
+        users: "Kullanıcı bilgileri"
+      user:
+        email_address: "E-posta adresi"
+    errors:
+      models:
+        organization:
+          attributes:
+            users:
+              invalid: "geçersiz."
+        user:
+          attributes:
+            email_address:
+              taken: "zaten kayıtlı. Giriş yapmayı deneyin veya başka bir e-posta kullanın."
   sla:
     on_track: "SLA uygun"
     at_risk: "Yanıt yaklaşmalı"

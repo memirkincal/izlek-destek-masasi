@@ -38,6 +38,21 @@ class TicketWorkflowTest < ActionDispatch::IntegrationTest
     assert_equal "Acme Helpdesk", created_user.organization.name
   end
 
+  test "registration with an existing email shows a translated error without creating a workspace" do
+    existing_email = users(:one).email_address
+
+    assert_no_difference [ "Organization.count", "User.count" ] do
+      post registrations_path, params: {
+        organization: { name: "Duplicate Workspace" },
+        user: { name: "Duplicate User", email_address: existing_email, password: "StrongPass123!", password_confirmation: "StrongPass123!" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select ".form-errors", /E-posta adresi zaten kayıtlı/
+    assert_no_match(/Translation missing/, css_select(".form-errors").text)
+  end
+
   test "a requester sees only their own workspace tickets" do
     requester = users(:two)
     own_ticket = requester.organization.tickets.create!(requester_user: requester, requester_name: requester.name,
