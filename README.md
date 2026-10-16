@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/memirkincal/izlek-destek-masasi/actions/workflows/ci.yml/badge.svg)](https://github.com/memirkincal/izlek-destek-masasi/actions/workflows/ci.yml)
 
-**Uygulama / App:** deployment pending — Render + Supabase credentials and first deploy must be completed before sharing a live URL.
+**Uygulama / App:** deployment pending — first deploy and a live URL check are required before submission.
 **Kaynak / Source:** [GitHub](https://github.com/memirkincal/izlek-destek-masasi)
 
 ---
@@ -77,17 +77,21 @@ bundle exec rubocop
 
 SLA ve durum geçişleri `travel_to` ile sabit zamanda test edilir. GitHub Actions, PostgreSQL 16 servisinde migration ve testleri çalıştırır; README rozeti en son workflow durumunu gösterir.
 
-### Canlıya alma: Render + Supabase
+### Canlıya alma: Rails sunucusu + Supabase (Vercel Marketplace seçeneği)
 
-Ödev **canlı URL'yi açıkça zorunlu tutuyor**; yerel sunum yeterli değil. Rails 8 sunucu uygulaması Render Web Service üzerinde, kalıcı PostgreSQL veritabanı Supabase üzerinde çalışacak şekilde yapılandırıldı. Vercel'in Ruby runtime'ı beta ve Vercel dokümanı Rails'i başlıca Vercel'de barındırılan bir frontend'e API olarak bağlama yaklaşımını anlatıyor; bu Rails-rendered portal için doğrudan uyumlu hedef Render'dır ([Vercel Ruby runtime](https://vercel.com/docs/functions/runtimes/ruby), [Vercel Rails yaklaşımı](https://vercel.com/kb/guide/does-vercel-support-ruby-on-rails-applications), [Render Rails 8 kılavuzu](https://render.com/docs/deploy-rails-8)).
+Ödev **canlı URL'yi açıkça zorunlu tutuyor**; yerel sunum yeterli değil. İzlek, Rails 8 ile sunucu tarafında çalışan tek parça bir uygulamadır. Vercel'in Ruby desteği Beta Function'lar içindir ve her `.rb` dosyası tek bir HTTP handler tanımlar; Vercel'in Rails rehberi de Rails'i Vercel'de çalışan ayrı bir frontend'e API olarak bağlama yaklaşımını anlatır. Bu nedenle mevcut Rails portalı Vercel'e doğrudan dağıtılacak şekilde belgelenmemiştir ([Vercel Ruby runtime](https://vercel.com/docs/functions/runtimes/ruby), [Vercel Rails yaklaşımı](https://vercel.com/kb/guide/does-vercel-support-ruby-on-rails-applications)).
+
+Supabase projesi Vercel Marketplace'ten oluşturulabilir. Bu, Vercel üzerinden yönetilen ve Vercel faturasında görünen gerçek bir Supabase/PostgreSQL projesidir; ancak Marketplace entegrasyonu bağlantı değişkenlerini bağlı **Vercel** projelerine senkronlar. Rails uygulaması Vercel dışında çalışırsa `DATABASE_URL` bağlantısı Rails sunucusunun gizli ortam değişkenlerine ayrıca girilmelidir ([Supabase Vercel Marketplace rehberi](https://supabase.com/docs/guides/integrations/vercel-marketplace)).
+
+Bu depodaki mevcut dağıtım tanımı, Rails uygulamasını Render Web Service üzerinde ve PostgreSQL'i Supabase'te çalıştırır. Vercel'den Supabase oluşturmak bu mimariyle uyumludur; yalnızca DB bağlantısını Render'a güvenli biçimde kopyalamak gerekir. Rails'i gerçekten Vercel üzerinde çalıştırmak için uygulama mimarisini ayırmak (Vercel frontend + başka yerde Rails API) gerekir; bu mevcut dağıtımın bir parçası değildir. Render, bu Rails-rendered portal için doğrudan uyumlu hedeftir ([Render Rails 8 kılavuzu](https://render.com/docs/deploy-rails-8)).
 
 1. GitHub deposunu Render'a bağlayıp `render.yaml` Blueprint'ini oluşturun.
-2. Supabase projesinde **Session pooler (5432)** bağlantısını kopyalayıp Render'daki `DATABASE_URL` gizli değişkenine girin. Rails için Transaction pooler (6543) kullanmayın; Supabase, session pooler/direct connection ve `sslmode=require` öneriyor ([Supabase Rails rehberi](https://supabase.com/docs/guides/getting-started/quickstarts/ruby-on-rails)).
+2. Supabase'i Supabase Dashboard'dan veya Vercel Marketplace'ten oluşturun. Ardından Supabase projesindeki **Session pooler (5432)** bağlantısını kopyalayıp Render'daki `DATABASE_URL` gizli değişkenine girin. Rails için Transaction pooler (6543) kullanmayın; Supabase, session pooler/direct connection ve `sslmode=require` öneriyor ([Supabase Rails rehberi](https://supabase.com/docs/guides/getting-started/quickstarts/ruby-on-rails)).
 3. `RAILS_MASTER_KEY` için `config/master.key` içeriğini Render gizli değişkenine girin. Bu anahtarı repoya koymayın. Parola sıfırlama e-postalarını açmak için ayrıca `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_DOMAIN`, `SMTP_USERNAME`, `SMTP_PASSWORD`, isteğe bağlı `SMTP_AUTHENTICATION` ve `APP_HOST` secret/env değişkenlerini girin.
 4. İlk build/deploy bitince Render URL'sini `/up` ile kontrol edin; kayıt oluşturup iki ayrı kurum hesabıyla tenant izolasyonunu ve talep akışını elle doğrulayın.
 5. Gerçek canlı URL'yi bu README'ye ve ödev teslim alanına ekleyin. Şu an linki doldurulmuş gibi göstermiyoruz: ilk deploy ve URL doğrulaması yapılmadan canlı demek doğru olmaz.
 
-Render tarafındaki kullanıcı onayı ve Supabase veritabanı bilgileri hesap sahibinin kontrolünde gereklidir; bağlantı dizesi veya anahtarlar sohbet/repoya yazılmamalıdır.
+Render hesabı ve veritabanı bağlantısı için hesap sahibinin erişimi gerekir; bağlantı dizesi veya anahtarları sohbete/repoya koymayın. Vercel Marketplace kullanılırsa Supabase ortam değişkenleri Rails'in çalıştığı Render servisine otomatik aktarılmaz.
 
 ### Yapamadıklarım / kapsam dışı
 
@@ -170,17 +174,21 @@ bundle exec rubocop
 
 SLA and state-transition tests use `travel_to`. GitHub Actions runs migrations and tests against PostgreSQL 16; the badge above shows the latest workflow status.
 
-### Deployment: Render + Supabase
+### Deployment: Rails server + Supabase (Vercel Marketplace option)
 
-The assignment **explicitly requires a live URL**; a local demo is insufficient. This project is configured for a Render Web Service running Rails 8 and a Supabase PostgreSQL database. Vercel's Ruby runtime is in beta and its Rails guidance describes Rails as an API for a frontend hosted on Vercel; Render is the direct fit for this Rails-rendered portal ([Vercel Ruby runtime](https://vercel.com/docs/functions/runtimes/ruby), [Vercel Rails guidance](https://vercel.com/kb/guide/does-vercel-support-ruby-on-rails-applications), [Render Rails 8 guide](https://render.com/docs/deploy-rails-8)).
+The assignment **explicitly requires a live URL**; a local demo is insufficient. İzlek is a monolithic Rails 8 server-rendered application. Vercel's Ruby support is for beta Functions where each `.rb` file defines one HTTP handler; Vercel's Rails guide describes using Rails as an API for a separate frontend hosted on Vercel. The current Rails portal is therefore not documented as a direct Vercel deployment ([Vercel Ruby runtime](https://vercel.com/docs/functions/runtimes/ruby), [Vercel Rails guidance](https://vercel.com/kb/guide/does-vercel-support-ruby-on-rails-applications)).
+
+Supabase can be provisioned through the Vercel Marketplace. It remains a real Supabase/PostgreSQL project managed and billed through Vercel. The Marketplace syncs environment variables to connected **Vercel** projects; if Rails runs outside Vercel, copy `DATABASE_URL` securely into the Rails host yourself ([Supabase Vercel Marketplace guide](https://supabase.com/docs/guides/integrations/vercel-marketplace)).
+
+This repository's current deployment definition runs Rails on a Render Web Service and PostgreSQL on Supabase. Creating Supabase through Vercel fits this architecture; the database URL must be entered into Render. Running Rails itself on Vercel would require separating the app into a Vercel frontend and a Rails API hosted elsewhere, which is not part of the current deployment. Render is the direct fit for this Rails-rendered portal ([Render Rails 8 guide](https://render.com/docs/deploy-rails-8)).
 
 1. Connect the GitHub repository to Render and create the `render.yaml` Blueprint.
-2. In Supabase, copy the **Session pooler (5432)** connection string into Render's secret `DATABASE_URL`. Do not use the Transaction pooler (6543) as Rails' main connection; Supabase recommends the session pooler/direct connection and `sslmode=require` ([Supabase Rails guide](https://supabase.com/docs/guides/getting-started/quickstarts/ruby-on-rails)).
+2. Create Supabase from its dashboard or the Vercel Marketplace. In Supabase, copy the **Session pooler (5432)** connection string into Render's secret `DATABASE_URL`. Do not use the Transaction pooler (6543) as Rails' main connection; Supabase recommends the session pooler/direct connection and `sslmode=require` ([Supabase Rails guide](https://supabase.com/docs/guides/getting-started/quickstarts/ruby-on-rails)).
 3. Set `RAILS_MASTER_KEY` in Render from `config/master.key`. Never commit this key. To enable reset emails, also set `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_DOMAIN`, `SMTP_USERNAME`, `SMTP_PASSWORD`, optional `SMTP_AUTHENTICATION`, and `APP_HOST` as environment secrets/variables.
 4. After the first deploy, check the Render URL at `/up`, then manually verify signup and the ticket workflow with accounts in two separate organizations.
 5. Add the verified live URL to this README and the assignment submission. It is intentionally not presented as live until a first deploy has been verified.
 
-The account owner's Render approval and Supabase database credentials are required; never paste connection strings or keys into chat or the repository.
+Access to the Render account and database connection is required; never paste connection strings or keys into chat or the repository. Marketplace environment variables are not automatically copied to a Rails service running on Render.
 
 ### What is not implemented / limitations
 
