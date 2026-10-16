@@ -86,3 +86,4 @@ Dağıtım hedefi Render'dır. `render.yaml` web servisini ve PostgreSQL veritab
 
 Kodun mimarisi, doğrulama komutları ve katkı sınırları için [`AGENT.md`](AGENT.md) dosyasına bakın.
 
+
