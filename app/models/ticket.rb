@@ -1,16 +1,18 @@
 class Ticket < ApplicationRecord
   STATUSES = %w[new open solved].freeze
   PRIORITIES = %w[low normal high urgent].freeze
-  AGENTS = [ "Ece Demir", "Mert Kaya", "Deniz Arslan" ].freeze
   FIRST_RESPONSE_SLA = 4.hours
 
+  belongs_to :organization
+  belongs_to :requester_user, class_name: "User"
+  belongs_to :assignee_user, class_name: "User", optional: true
   has_many :replies, dependent: :destroy
 
   validates :requester_name, :requester_email, :subject, :description, presence: true
   validates :status, inclusion: { in: STATUSES }
   validates :priority, inclusion: { in: PRIORITIES }
-  validates :assignee, inclusion: { in: AGENTS }, allow_blank: true
   validates :subject, length: { maximum: 120 }
+  validate :assignee_belongs_to_organization
 
   before_validation :set_defaults, on: :create
   before_create :set_response_deadline
@@ -52,19 +54,33 @@ class Ticket < ApplicationRecord
     return if response_due_at.blank? || !first_response_due?
 
     seconds = (response_due_at - Time.current).to_i
-    return "Süre aşıldı" if seconds <= 0
+    return I18n.t("sla.overdue_time") if seconds <= 0
 
     hours, remainder = seconds.divmod(3600)
     minutes = remainder / 60
-    hours.positive? ? "#{hours} sa #{minutes} dk" : "#{minutes} dk"
+    return I18n.t("sla.remaining_hours", hours: hours, minutes: minutes) if hours.positive?
+
+    I18n.t("sla.remaining_minutes", count: minutes)
   end
 
   def next_action
-    return "İlk yanıtı gönder" if first_response_due?
-    return "Talebi aç" if status == "new"
-    return "Çözümü doğrula" if status == "open"
+    return I18n.t("tickets.next_first_response") if first_response_due?
+    return I18n.t("tickets.next_open") if status == "new"
+    return I18n.t("tickets.next_solve") if status == "open"
 
-    "Tamamlandı"
+    I18n.t("tickets.next_done")
+  end
+
+  def assignee_name
+    assignee_user&.name || assignee.presence || "Atanmadı"
+  end
+
+  def requester_display_name
+    requester_user&.name || requester_name
+  end
+
+  def requester_display_email
+    requester_user&.email_address || requester_email
   end
 
   private
@@ -76,5 +92,13 @@ class Ticket < ApplicationRecord
 
   def set_response_deadline
     self.response_due_at ||= (created_at || Time.current) + FIRST_RESPONSE_SLA
+  end
+
+  def assignee_belongs_to_organization
+    return unless assignee_user
+
+    unless assignee_user.organization_id == organization_id && assignee_user.support_staff?
+      errors.add(:assignee_user, :invalid)
+    end
   end
 end

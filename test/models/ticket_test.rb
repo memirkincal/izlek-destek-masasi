@@ -5,7 +5,11 @@ class TicketTest < ActiveSupport::TestCase
 
   setup do
     travel_to Time.zone.local(2026, 10, 16, 12, 0)
-    @ticket = Ticket.create!(requester_name: "Ada Yılmaz", requester_email: "ada@example.com", subject: "Fatura", description: "Faturamı göremiyorum")
+    @organization = organizations(:demo)
+    @requester = users(:two)
+    @ticket = @organization.tickets.create!(requester_user: @requester, requester_name: @requester.name,
+                                             requester_email: @requester.email_address, subject: "Fatura",
+                                             description: "Faturamı göremiyorum")
   end
 
   teardown do
@@ -23,7 +27,7 @@ class TicketTest < ActiveSupport::TestCase
 
     travel_to @ticket.response_due_at
     assert_equal :breached, @ticket.sla_state
-    assert_equal "Süre aşıldı", @ticket.sla_remaining
+    assert_equal I18n.t("sla.overdue_time"), @ticket.sla_remaining
   end
 
   test "allows only the intended status transitions" do
@@ -40,7 +44,7 @@ class TicketTest < ActiveSupport::TestCase
 
   test "the first public reply stops the SLA and moves a new ticket to open" do
     travel_to 37.minutes.from_now do
-      @ticket.replies.create!(author_name: "Ece Demir", body: "Faturanızı kontrol ediyorum.")
+      @ticket.replies.create!(user: users(:one), author_name: users(:one).name, body: "Faturanızı kontrol ediyorum.")
     end
 
     assert_equal "open", @ticket.reload.status
@@ -50,8 +54,18 @@ class TicketTest < ActiveSupport::TestCase
 
   test "a reply on a solved ticket does not silently reopen it" do
     @ticket.update!(status: "solved", solved_at: Time.current, first_response_at: Time.current)
-    @ticket.replies.create!(author_name: "Ece Demir", body: "Bu kayıt kapalı kalmalı.")
+    @ticket.replies.create!(user: users(:one), author_name: users(:one).name, body: "Bu kayıt kapalı kalmalı.")
 
     assert_equal "solved", @ticket.reload.status
+  end
+
+  test "an assignee must be support staff from the same organization" do
+    other_organization = Organization.create!(name: "Other workspace")
+    other_agent = other_organization.users.create!(name: "Other Agent", email_address: "other@workspace.test",
+                                                     role: "agent", password: "password123")
+    @ticket.assignee_user = other_agent
+
+    assert_not @ticket.valid?
+    assert_includes @ticket.errors.attribute_names, :assignee_user
   end
 end

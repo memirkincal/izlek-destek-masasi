@@ -1,3 +1,24 @@
+unless Rails.env.production?
+organization = Organization.find_or_create_by!(name: "İzlek Demo")
+
+accounts = [
+  { name: "Ece Demir", email: "ece@izlek.demo", role: "admin" },
+  { name: "Mert Kaya", email: "mert@izlek.demo", role: "agent" },
+  { name: "Deniz Arslan", email: "deniz@izlek.demo", role: "agent" }
+]
+
+accounts.each do |account|
+  User.find_or_create_by!(email_address: account[:email]) do |user|
+    user.name = account[:name]
+    user.role = account[:role]
+    user.organization = organization
+    user.password = "IzlekDemo2026!"
+    user.password_confirmation = "IzlekDemo2026!"
+  end
+end
+
+agents = organization.users.where(role: %w[admin agent]).index_by(&:name)
+
 samples = [
   { name: "Ada Yılmaz", email: "ada.yilmaz@example.com", subject: "Ödeme alındı ama hesabım hâlâ ücretsiz görünüyor", body: "Merhaba, yıllık plana geçtim ve kartımdan ödeme alındı. Ancak hesabımda hâlâ ücretsiz plan yazıyor. Yardımcı olabilir misiniz?", priority: "urgent", assignee: "Ece Demir", status: "new", age: 218.minutes },
   { name: "Can Özkan", email: "can.ozkan@example.com", subject: "Son faturamı indiremedim", body: "Faturalar bölümündeki indirme bağlantısına bastığımda boş bir sayfa açılıyor. PDF olarak paylaşabilir misiniz?", priority: "high", assignee: "Mert Kaya", status: "new", age: 203.minutes },
@@ -8,16 +29,35 @@ samples = [
 ]
 
 samples.each do |sample|
-  ticket = Ticket.find_or_initialize_by(subject: sample[:subject])
-  next if ticket.persisted?
+  requester = organization.users.find_or_create_by!(email_address: sample[:email]) do |user|
+    user.name = sample[:name]
+    user.role = "requester"
+    user.password = "IzlekDemo2026!"
+    user.password_confirmation = "IzlekDemo2026!"
+  end
 
+  ticket = organization.tickets.find_or_initialize_by(subject: sample[:subject])
   created_at = Time.current - sample[:age]
-  ticket.assign_attributes(requester_name: sample[:name], requester_email: sample[:email], description: sample[:body], priority: sample[:priority], assignee: sample[:assignee], status: sample[:status], created_at: created_at, updated_at: created_at, response_due_at: created_at + Ticket::FIRST_RESPONSE_SLA)
+  ticket.assign_attributes(
+    requester_user: requester,
+    requester_name: requester.name,
+    requester_email: requester.email_address,
+    assignee_user: agents[sample[:assignee]],
+    assignee: sample[:assignee],
+    description: sample[:body], priority: sample[:priority], status: sample[:status],
+    created_at: created_at, updated_at: created_at,
+    response_due_at: created_at + Ticket::FIRST_RESPONSE_SLA
+  )
   ticket.save!
+
   if sample[:reply]
     response_at = created_at + 25.minutes
-    ticket.replies.create!(author_name: sample[:assignee], body: sample[:reply], created_at: response_at)
+    reply = ticket.replies.find_or_initialize_by(body: sample[:reply])
+    reply.assign_attributes(user: agents[sample[:assignee]], author_name: sample[:assignee], created_at: response_at)
+    reply.save!
     ticket.update!(first_response_at: response_at, updated_at: response_at)
   end
+
   ticket.update!(solved_at: 3.hours.ago) if sample[:status] == "solved"
+end
 end

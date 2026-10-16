@@ -1,0 +1,19 @@
+<% content_for :title, "#{t('auth.sign_in')} — İzlek" %>
+<section class="auth-page">
+  <div class="auth-decoration auth-decoration-one"></div><div class="auth-decoration auth-decoration-two"></div>
+  <div class="auth-card">
+    <span class="auth-mark"><svg viewBox="0 0 32 32"><path d="M6 18.5 13.3 26 26 7"/><path d="M5 9.5h8"/></svg></span>
+    <div class="eyebrow"><%= t("auth.sign_in") %> · İZLEK</div>
+    <h1><%= t("auth.sign_in_title") %></h1>
+    <p class="auth-subtitle"><%= t("auth.sign_in_subtitle") %></p>
+    <%= form_with url: session_path, class: "auth-form" do |form| %>
+      <div class="field"><%= form.label :email_address, t("auth.email") %><%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "you@company.com" %></div>
+      <div class="field"><div class="field-label-row"><%= form.label :password, t("auth.password") %><% if !Rails.env.production? || ENV["SMTP_ADDRESS"].present? %><%= link_to t("auth.forgot_password"), new_password_path, class: "text-link" %><% end %></div><%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "••••••••••" %></div>
+      <%= form.submit t("auth.sign_in"), class: "button button-primary auth-submit" %>
+    <% end %>
+    <div class="auth-divider"><span><%= t("auth.no_account") %></span></div>
+    <%= link_to t("auth.create_account"), new_registration_path, class: "button button-secondary auth-submit" %>
+    <% if Rails.env.development? %><p class="demo-credentials"><span>✦</span><%= t("auth.demo_hint") %></p><% end %>
+  </div>
+  <p class="auth-footnote"><%= t("auth.footer_note") %></p>
+</section>

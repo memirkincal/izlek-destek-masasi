@@ -1,5 +1,6 @@
 class Reply < ApplicationRecord
   belongs_to :ticket
+  belongs_to :user, optional: true
 
   validates :author_name, :body, presence: true
   validates :body, length: { maximum: 2_000 }

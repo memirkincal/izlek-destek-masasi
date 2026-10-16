@@ -1,0 +1,4 @@
+<p><%= t("auth.reset_email_intro") %></p>
+<p><%= link_to t("auth.reset_email_link"), edit_password_url(@user.password_reset_token) %></p>
+<p><%= t("auth.reset_email_expiry", duration: distance_of_time_in_words(0, @user.password_reset_token_expires_in)) %></p>
+<p><%= t("auth.reset_email_ignore") %></p>

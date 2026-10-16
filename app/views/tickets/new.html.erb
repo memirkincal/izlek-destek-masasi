@@ -1,15 +1,14 @@
-<% content_for :title, "Yeni talep — İzlek" %>
-<% content_for :page_heading, "Yeni talep" %>
+<% content_for :title, "#{t('tickets.new_ticket')} — İzlek" %>
+<% content_for :page_heading, t("tickets.new_ticket") %>
 <section class="page-content narrow-page">
-  <div class="page-heading-row"><div><div class="eyebrow">GELEN KUTUSU / YENİ</div><h1>Yeni talep oluştur</h1><p class="page-subtitle">Talep kaydedildiğinde ilk yanıt için dört saatlik SLA başlar.</p></div><%= link_to "← Gelen kutusu", root_path, class: "back-link" %></div>
+  <div class="page-heading-row"><div><div class="eyebrow"><%= t("tickets.inbox").upcase %> / <%= t("tickets.new_ticket").upcase %></div><h1><%= t("tickets.new_heading") %></h1><p class="page-subtitle"><%= t("tickets.new_subtitle") %></p></div><%= link_to "← #{t('tickets.back_inbox')}", root_path, class: "back-link" %></div>
   <%= form_with model: @ticket, class: "form-card" do |form| %>
-    <% if @ticket.errors.any? %><div class="form-errors"><strong>Talep kaydedilemedi.</strong><ul><% @ticket.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div><% end %>
-    <div class="form-section-title"><span class="form-section-icon">01</span><div><strong>Müşteri bilgileri</strong><small>Yanıtın kime gideceğini belirt.</small></div></div>
-    <div class="form-grid"><div class="field"><%= form.label :requester_name, "Ad soyad" %><%= form.text_field :requester_name, placeholder: "Örn. Ada Yılmaz", required: true %></div><div class="field"><%= form.label :requester_email, "E-posta adresi" %><%= form.email_field :requester_email, placeholder: "ada@ornek.com", required: true %></div></div>
-    <div class="form-section-title section-spaced"><span class="form-section-icon">02</span><div><strong>Sorun detayları</strong><small>Ekibin hızlıca anlayabilmesi için açıklayıcı ol.</small></div></div>
-    <div class="field"><%= form.label :subject, "Konu" %><%= form.text_field :subject, placeholder: "Örn. Faturama ulaşamıyorum", maxlength: 120, required: true %></div>
-    <div class="field"><%= form.label :description, "Açıklama" %><%= form.text_area :description, rows: 5, placeholder: "Müşterinin yaşadığı sorunu ve denediği adımları yaz…", required: true %></div>
-    <div class="field"><%= form.label :priority, "Öncelik" %><%= form.select :priority, [["Düşük", "low"], ["Normal", "normal"], ["Yüksek", "high"], ["Acil", "urgent"]], {}, class: "select-input" %></div>
-    <div class="form-footer"><span><span class="lock-icon">◷</span> İlk yanıt süresi: <strong>4 saat</strong></span><%= form.submit "Talebi oluştur", class: "button button-primary" %></div>
+    <% if @ticket.errors.any? %><div class="form-errors" role="alert"><strong><%= t("errors.form_title") %></strong><ul><% @ticket.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div><% end %>
+    <div class="requester-summary"><span class="avatar avatar-customer"><%= initials(current_user.name) %></span><span><small><%= t("tickets.requester") %></small><strong><%= current_user.name %></strong><em><%= current_user.email_address %></em></span><span class="verified-mark">✓</span></div>
+    <div class="form-section-title section-spaced"><span class="form-section-icon">01</span><div><strong><%= t("tickets.issue_details") %></strong><small><%= t("tickets.issue_details_hint") %></small></div></div>
+    <div class="field"><%= form.label :subject, t("tickets.title") %><%= form.text_field :subject, placeholder: t("tickets.title_placeholder"), maxlength: 120, required: true %></div>
+    <div class="field"><%= form.label :description, t("tickets.description") %><%= form.text_area :description, rows: 5, placeholder: t("tickets.description_placeholder"), required: true %></div>
+    <div class="field"><%= form.label :priority, t("tickets.priority_label") %><%= form.select :priority, [[t("tickets.priority_low"), "low"], [t("tickets.priority_normal"), "normal"], [t("tickets.priority_high"), "high"], [t("tickets.priority_urgent"), "urgent"]], {}, class: "select-input" %></div>
+    <div class="form-footer"><span><span class="lock-icon">◷</span> <%= t("tickets.sla_target") %>: <strong>4 <%= t("tickets.hours") %></strong></span><%= form.submit t("tickets.create"), class: "button button-primary" %></div>
   <% end %>
 </section>

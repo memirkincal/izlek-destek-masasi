@@ -1,0 +1,11 @@
+<div class="toast-stack" aria-live="polite" aria-atomic="false">
+  <% flash.each do |type, message| %>
+    <% next if message.blank? %>
+    <% kind = type.to_sym == :alert ? "error" : "success" %>
+    <div class="toast toast-<%= kind %>" role="<%= kind == 'error' ? 'alert' : 'status' %>" data-toast>
+      <span class="toast-icon" aria-hidden="true"><%= kind == "error" ? "!" : "✓" %></span>
+      <span class="toast-message"><%= message %></span>
+      <button class="toast-close" type="button" aria-label="<%= t('flash.close') %>" data-toast-dismiss>×</button>
+    </div>
+  <% end %>
+</div>

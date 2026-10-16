@@ -1,42 +1,190 @@
 tr:
-  date:
-    month_names:
-      -
-      - Ocak
-      - Şubat
-      - Mart
-      - Nisan
-      - Mayıs
-      - Haziran
-      - Temmuz
-      - Ağustos
-      - Eylül
-      - Ekim
-      - Kasım
-      - Aralık
-    abbr_month_names:
-      -
-      - Oca
-      - Şub
-      - Mar
-      - Nis
-      - May
-      - Haz
-      - Tem
-      - Ağu
-      - Eyl
-      - Eki
-      - Kas
-      - Ara
+  sla:
+    on_track: "SLA uygun"
+    at_risk: "Yanıt yaklaşmalı"
+    breached: "Süre aşıldı"
+    responded: "İlk yanıt verildi"
+    overdue_time: "Süre aşıldı"
+    remaining_hours: "%{hours} sa %{minutes} dk"
+    remaining_minutes: "%{count} dk"
   time:
+    just_now: "az önce"
+    minutes: "%{count} dakika"
+    hours: "%{count} saat"
+    days: "%{count} gün"
     formats:
       default: "%d %B %Y %H:%M"
       short: "%d %b, %H:%M"
-  activerecord:
-    attributes:
-      ticket:
-        requester_name: "Ad soyad"
-        requester_email: "E-posta adresi"
-        subject: "Konu"
-        description: "Açıklama"
-        priority: "Öncelik"
+  date:
+    month_names: [~, Ocak, Şubat, Mart, Nisan, Mayıs, Haziran, Temmuz, Ağustos, Eylül, Ekim, Kasım, Aralık]
+    abbr_month_names: [~, Oca, Şub, Mar, Nis, May, Haz, Tem, Ağu, Eyl, Eki, Kas, Ara]
+  auth:
+    sign_in: "Giriş yap"
+    sign_in_title: "Tekrar hoş geldin"
+    sign_in_subtitle: "Destek çalışma alanına erişmek için giriş yap."
+    email: "E-posta adresi"
+    password: "Şifre"
+    password_confirmation: "Şifreyi tekrar gir"
+    forgot_password: "Şifremi unuttum"
+    no_account: "Henüz hesabın yok mu?"
+    create_account: "Ücretsiz çalışma alanı oluştur"
+    create_workspace: "Çalışma alanını oluştur"
+    register_title: "Destek ekibini bir araya getir"
+    register_subtitle: "Kurumunu oluştur, ekibinle talepleri tek yerde takip et."
+    name: "Ad soyad"
+    organization: "Kurum adı"
+    account_created: "Çalışma alanın hazır. İzlek'e hoş geldin!"
+    signed_in: "Tekrar hoş geldin."
+    signed_out: "Güvenli şekilde çıkış yaptın."
+    invalid_credentials: "E-posta veya şifre hatalı. Tekrar dene."
+    too_many_signins: "Çok fazla giriş denemesi. Birkaç dakika sonra tekrar dene."
+    footer_note: "Her müşteri konuşmasını sakin ve net bir akışta tut."
+    too_many_signups: "Çok fazla kayıt denemesi yapıldı. Bir saat sonra tekrar dene."
+    too_many_password_requests: "Çok fazla parola sıfırlama isteği yapıldı. Birkaç dakika sonra tekrar dene."
+    reset_instructions_sent: "Bu adres kayıtlıysa parola sıfırlama yönergesi gönderildi."
+    password_reset: "Parolan güncellendi."
+    passwords_mismatch: "Parolalar eşleşmiyor."
+    invalid_reset_link: "Parola sıfırlama bağlantısı geçersiz veya süresi dolmuş."
+    forgot_title: "Parolanı sıfırla"
+    forgot_subtitle: "Hesabına bağlı e-posta adresini yaz."
+    send_reset: "Sıfırlama bağlantısı gönder"
+    reset_title: "Yeni parola belirle"
+    save_password: "Parolayı kaydet"
+    password_placeholder: "En az 8 karakter"
+    password_confirmation: "Yeni parolayı tekrar yaz"
+    reset_email_subject: "İzlek parola sıfırlama bağlantısı"
+    reset_email_intro: "İzlek hesabın için parola sıfırlama isteği aldık."
+    reset_email_link: "Yeni parola belirle"
+    reset_email_expiry: "Bu bağlantı %{duration} içinde sona erer."
+    reset_email_ignore: "Bu isteği sen yapmadıysan bu e-postayı yok sayabilirsin."
+    demo_hint: "Demo hesabı: ece@izlek.demo · İzlekDemo2026!"
+  nav:
+    product_subtitle: "Destek çalışma alanı"
+    workspace: "ÇALIŞMA ALANI"
+    inbox: "Gelen kutusu"
+    unassigned: "Atanmamış"
+    statuses: "DURUMLAR"
+    new: "Yeni talepler"
+    open: "Açık"
+    solved: "Çözüldü"
+    team: "Ekip üyeleri"
+    online: "Çalışma alanı aktif"
+    help: "Yardım"
+    sign_out: "Çıkış yap"
+    admin: "Yönetici"
+    agent: "Temsilci"
+    requester: "Talep sahibi"
+  tickets:
+    inbox: "Gelen kutusu"
+    inbox_subtitle: "Ekibinin ilgilenmesi gereken her şey tek bir yerde."
+    new_ticket: "Yeni talep"
+    active: "Aktif talepler"
+    team_queue: "Çalışma alanındaki kuyruk"
+    waiting: "Yeni"
+    waiting_first_response: "İlk yanıtı bekliyor"
+    sla_risk: "Süre riski"
+    respond_soon: "Süresi yaklaşan talepler"
+    resolved: "Çözülen"
+    completed_items: "Tamamlanan talepler"
+    all: "Tümü"
+    status_new: "Yeni"
+    status_open: "Açık"
+    status_solved: "Çözüldü"
+    priority_low: "Düşük"
+    priority_normal: "Normal"
+    priority_high: "Yüksek"
+    priority_urgent: "Acil"
+    subject: "TALEP"
+    priority: "ÖNCELİK"
+    assignee: "SORUMLU"
+    first_response_sla: "İLK YANIT SLA"
+    updated: "SON GÜNCELLEME"
+    search: "Talep veya kişi ara…"
+    search_label: "Talep veya kişi ara"
+    unassigned: "Atanmadı"
+    unassigned_filter: "Atanmamış"
+    answered: "Yanıtlandı"
+    next_first_response: "İlk yanıtı gönder"
+    next_open: "Talebi aç"
+    next_solve: "Çözümü doğrula"
+    next_done: "Tamamlandı"
+    no_results: "Bu aramada talep bulamadık"
+    empty: "Her şey yolunda"
+    try_another: "Başka bir ifade deneyebilirsin."
+    no_pending: "Bu görünümde bekleyen talep yok."
+    portal_welcome: "Merhaba, %{name}."
+    portal_subtitle: "Taleplerini buradan oluşturabilir, ekibin yanıtlarını takip edebilirsin."
+    see_all: "Tüm talepleri gör"
+    shown: "talep gösteriliyor"
+    next_action_hint: "Sıradaki adım her talepte görünür"
+    footer_note: "İzlek, ekibinin sıradaki doğru adıma odaklanmasına yardım eder."
+    new_heading: "Yeni talep oluştur"
+    new_subtitle: "Talep kaydedildiğinde ilk yanıt için dört saatlik süre başlar."
+    back_inbox: "Gelen kutusuna dön"
+    issue_details: "Talep ayrıntıları"
+    issue_details_hint: "Ekibin hızlıca anlayabilmesi için açıklayıcı ol."
+    title: "Konu"
+    description: "Açıklama"
+    description_placeholder: "Sorunu ve denediğin adımları anlat…"
+    title_placeholder: "Örn. Faturama ulaşamıyorum"
+    hours: "saat"
+    priority_label: "Öncelik"
+    sla_target: "İlk yanıt hedefi"
+    create: "Talebi oluştur"
+    created: "Talebin çalışma alanına eklendi. İlk yanıt için dört saatlik süre başladı."
+    detail_back: "Gelen kutusuna dön"
+    last_update: "Son güncelleme"
+    conversation: "Konuşma"
+    replies: "yanıt"
+    requester: "Talep sahibi"
+    support_team: "Destek ekibi"
+    reply_to_customer: "yanıt yazıyor"
+    reply_placeholder: "Yanıtını buraya yaz…"
+    send_reply: "Yanıt gönder"
+    reply_sla_hint: "İlk yanıt gönderildiğinde SLA durur."
+    next_step: "Sıradaki adım"
+    open_ticket: "Talebi aç"
+    mark_solved: "Çözüldü olarak işaretle"
+    reopen: "Yeniden aç"
+    ticket_info: "Talep bilgileri"
+    status: "Durum"
+    requester_info: "Talep sahibi"
+    sla_due: "İlk yanıt hedefi"
+    four_hours_after: "Talep oluşturulduktan dört saat sonra"
+    created_notice: "Talep çalışma alanına eklendi."
+    assigned: "Talep ataması güncellendi."
+    invalid_assignee: "Bu ekip üyesi çalışma alanında bulunamadı."
+    opened: "Talep açıldı."
+    solved_notice: "Talep çözüldü."
+    reopened: "Talep yeniden açıldı."
+    cannot_open: "Bu talep açılamıyor."
+    cannot_reopen: "Bu talep yeniden açılamıyor."
+    solve_open_first: "Önce talebi aç, ardından çözüldü olarak işaretle."
+    reopen_before_reply: "Yanıt göndermeden önce talebi yeniden aç."
+    reply_sent: "Yanıt gönderildi."
+    reply_empty: "Yanıt boş olamaz."
+    staff_only: "Bu işlemi yalnızca destek ekibi yapabilir."
+  team:
+    title: "Ekip üyeleri"
+    subtitle: "Çalışma alanındaki kişileri ve erişim rollerini yönet."
+    add_member: "Ekip üyesi ekle"
+    add_hint: "Yeni kullanıcı giriş bilgileriyle hesabına erişebilir."
+    role: "Rol"
+    admin_role: "Yönetici"
+    agent_role: "Destek temsilcisi"
+    requester_role: "Talep sahibi"
+    password: "Geçici şifre"
+    add_button: "Üyeyi ekle"
+    member_list: "Çalışma alanı üyeleri"
+    member: "ÜYE"
+    email: "E-POSTA"
+    member_role: "ROL"
+    admin_only: "Ekip yönetimi yalnızca yöneticilere açıktır."
+    member_added: "%{name} çalışma alanına eklendi."
+    member_count: "üye"
+    members_count: "%{count} üye"
+    you: "sen"
+  flash:
+    close: "Bildirimi kapat"
+  errors:
+    form_title: "Bilgileri kontrol et"

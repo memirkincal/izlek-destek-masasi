@@ -1,0 +1,21 @@
+<% content_for :title, "#{t('team.title')} — İzlek" %>
+<% content_for :page_heading, t("team.title") %>
+<section class="page-content team-page">
+  <div class="page-heading-row"><div><div class="eyebrow"><%= current_user.organization.name.upcase %></div><h1><%= t("team.title") %></h1><p class="page-subtitle"><%= t("team.subtitle") %></p></div><span class="team-total"><strong><%= @members.size %></strong> <%= t("team.member_count") %></span></div>
+  <div class="team-layout">
+    <section class="team-panel team-form-panel"><div class="team-panel-heading"><span class="team-panel-icon">＋</span><div><strong><%= t("team.add_member") %></strong><small><%= t("team.add_hint") %></small></div></div>
+      <%= form_with model: @member, url: team_members_path, class: "team-form" do |form| %>
+        <% if @member.errors.any? %><div class="form-errors"><strong><%= t("errors.form_title") %></strong><ul><% @member.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div><% end %>
+        <div class="field"><%= form.label :name, t("auth.name") %><%= form.text_field :name, required: true, maxlength: 80 %></div>
+        <div class="field"><%= form.label :email_address, t("auth.email") %><%= form.email_field :email_address, required: true, autocomplete: "email" %></div>
+        <div class="field"><%= form.label :role, t("team.role") %><%= form.select :role, [[t("team.agent_role"), "agent"], [t("team.requester_role"), "requester"]], {}, class: "select-input" %></div>
+        <div class="field"><%= form.label :password, t("team.password") %><%= form.password_field :password, required: true, minlength: 8, autocomplete: "new-password" %></div>
+        <%= form.submit t("team.add_button"), class: "button button-primary auth-submit" %>
+      <% end %>
+    </section>
+    <section class="team-panel"><div class="team-list-heading"><div><strong><%= t("team.member_list") %></strong><small><%= current_user.organization.name %></small></div><span class="team-count-badge"><%= @members.size %></span></div>
+      <div class="team-table-head"><span><%= t("team.member") %></span><span><%= t("team.email") %></span><span><%= t("team.member_role") %></span></div>
+      <% @members.each do |member| %><div class="team-member-row"><span class="team-member-name"><span class="avatar <%= member.support_staff? ? 'avatar-self' : 'avatar-customer' %>"><%= initials(member.name) %></span><strong><%= member.name %><% if member.id == current_user.id %><small><%= t("team.you") %></small><% end %></strong></span><span class="team-email"><%= member.email_address %></span><span class="role-chip role-<%= member.role %>"><%= role_label(member.role) %></span></div><% end %>
+    </section>
+  </div>
+</section>

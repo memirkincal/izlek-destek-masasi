@@ -1,29 +1,33 @@
-<% content_for :title, "Gelen kutusu — İzlek" %>
-<% content_for :page_heading, "Gelen kutusu" %>
+<% content_for :title, "#{t('tickets.inbox')} — İzlek" %>
+<% content_for :page_heading, t("tickets.inbox") %>
 <section class="page-content">
   <div class="page-heading-row">
-    <div><div class="eyebrow"><%= l(Time.current, format: "%d %B %Y").upcase %></div><h1>Gelen kutusu <span class="heading-count"><%= @counts.values.sum %></span></h1><p class="page-subtitle">Ekibinin ilgilenmesi gereken her şey tek bir yerde.</p></div>
-    <%= link_to new_ticket_path, class: "button button-primary" do %><span class="button-plus">+</span> Yeni talep<% end %>
+    <div><div class="eyebrow"><%= l(Time.current, format: "%d %B %Y").upcase %></div><h1><%= t("tickets.inbox") %> <span class="heading-count"><%= @tickets.size %></span></h1><p class="page-subtitle"><%= t("tickets.inbox_subtitle") %></p></div>
+    <%= link_to new_ticket_path, class: "button button-primary" do %><span class="button-plus">+</span><%= t("tickets.new_ticket") %><% end %>
   </div>
-  <div class="stat-grid">
-    <div class="stat-card"><div class="stat-top"><span>Aktif talepler</span><span class="stat-icon icon-indigo">▤</span></div><strong><%= Ticket.active.count %></strong><small>Ekibin kuyruğunda</small></div>
-    <div class="stat-card"><div class="stat-top"><span>Yeni</span><span class="stat-icon icon-amber">◷</span></div><strong><%= @counts.fetch("new", 0) %></strong><small>İlk yanıtı bekliyor</small></div>
-    <div class="stat-card"><div class="stat-top"><span>Süre riski</span><span class="stat-icon icon-rose">!</span></div><strong><%= Ticket.active.count { |ticket| %i[at_risk breached].include?(ticket.sla_state) } %></strong><small>30 dakika içinde yanıtla</small></div>
-    <div class="stat-card"><div class="stat-top"><span>Çözülen</span><span class="stat-icon icon-green">✓</span></div><strong><%= @counts.fetch("solved", 0) %></strong><small>Bu listedeki tamamlananlar</small></div>
-  </div>
+  <% if current_user.support_staff? %>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-top"><span><%= t("tickets.active") %></span><span class="stat-icon icon-indigo">▤</span></div><strong><%= @active_count %></strong><small><%= t("tickets.team_queue") %></small></div>
+      <div class="stat-card"><div class="stat-top"><span><%= t("tickets.waiting") %></span><span class="stat-icon icon-amber">◷</span></div><strong><%= @counts.fetch("new", 0) %></strong><small><%= t("tickets.waiting_first_response") %></small></div>
+      <div class="stat-card"><div class="stat-top"><span><%= t("tickets.sla_risk") %></span><span class="stat-icon icon-rose">!</span></div><strong><%= @risk_count %></strong><small><%= t("tickets.respond_soon") %></small></div>
+      <div class="stat-card"><div class="stat-top"><span><%= t("tickets.resolved") %></span><span class="stat-icon icon-green">✓</span></div><strong><%= @counts.fetch("solved", 0) %></strong><small><%= t("tickets.completed_items") %></small></div>
+    </div>
+  <% else %>
+    <div class="requester-welcome"><span class="welcome-icon">✦</span><div><strong><%= t("tickets.portal_welcome", name: current_user.name.split.first) %></strong><p><%= t("tickets.portal_subtitle") %></p></div><span class="welcome-count"><%= @tickets.size %></span></div>
+  <% end %>
   <section class="inbox-card">
-    <div class="inbox-toolbar"><div class="filter-tabs"><%= link_to "Tümü", tickets_path(filter: "all", q: params[:q]), class: @filter == "all" ? "filter-tab selected" : "filter-tab" %><%= link_to "Yeni", tickets_path(filter: "new", q: params[:q]), class: @filter == "new" ? "filter-tab selected" : "filter-tab" %><%= link_to "Açık", tickets_path(filter: "open", q: params[:q]), class: @filter == "open" ? "filter-tab selected" : "filter-tab" %><%= link_to "Çözüldü", tickets_path(filter: "solved", q: params[:q]), class: @filter == "solved" ? "filter-tab selected" : "filter-tab" %></div><%= form_with url: tickets_path, method: :get, class: "search-form" do |form| %><%= form.hidden_field :filter, value: @filter %><span class="search-icon">⌕</span><%= form.search_field :q, value: params[:q], placeholder: "Talep veya müşteri ara…", aria: { label: "Talep ara" } %><% end %></div>
-    <div class="table-heading"><span>TALEP</span><span>ÖNCELİK</span><span>SORUMLU</span><span>İLK YANIT SLA</span><span>SON GÜNCELLEME</span></div>
+    <div class="inbox-toolbar"><div class="filter-tabs"><%= link_to t("tickets.all"), tickets_path(filter: "all", q: params[:q]), class: @filter == "all" ? "filter-tab selected" : "filter-tab" %><% if current_user.support_staff? %><%= link_to t("tickets.unassigned_filter"), tickets_path(filter: "unassigned", q: params[:q]), class: @filter == "unassigned" ? "filter-tab selected" : "filter-tab" %><% end %><%= link_to t("tickets.status_new"), tickets_path(filter: "new", q: params[:q]), class: @filter == "new" ? "filter-tab selected" : "filter-tab" %><%= link_to t("tickets.status_open"), tickets_path(filter: "open", q: params[:q]), class: @filter == "open" ? "filter-tab selected" : "filter-tab" %><%= link_to t("tickets.status_solved"), tickets_path(filter: "solved", q: params[:q]), class: @filter == "solved" ? "filter-tab selected" : "filter-tab" %></div><%= form_with url: tickets_path, method: :get, class: "search-form" do |form| %><%= form.hidden_field :filter, value: @filter %><span class="search-icon">⌕</span><%= form.search_field :q, value: params[:q], placeholder: t("tickets.search"), aria: { label: t("tickets.search_label") } %><% end %></div>
+    <div class="table-heading"><span><%= t("tickets.subject") %></span><span><%= t("tickets.priority") %></span><span><%= t("tickets.assignee") %></span><span><%= t("tickets.first_response_sla") %></span><span><%= t("tickets.updated") %></span></div>
     <% if @tickets.any? %><div class="ticket-list">
       <% @tickets.each do |ticket| %><%= link_to ticket_path(ticket), class: "ticket-row" do %>
-        <div class="ticket-main"><span class="ticket-state-icon state-<%= ticket.status %>"><%= ticket.status == "solved" ? "✓" : ticket.status == "new" ? "✳" : "↗" %></span><div class="ticket-copy"><div class="ticket-title-line"><strong><%= ticket.subject %></strong><span class="ticket-number">#<%= ticket.id.to_s.rjust(4, "0") %></span></div><div class="ticket-requester"><span><%= ticket.requester_name %></span><span class="requester-sep">·</span><span><%= ticket.requester_email %></span></div><div class="next-step-hint"><span>↳</span> <%= ticket.next_action %></div></div></div>
+        <div class="ticket-main"><span class="ticket-state-icon state-<%= ticket.status %>"><%= ticket.status == "solved" ? "✓" : ticket.status == "new" ? "✳" : "↗" %></span><div class="ticket-copy"><div class="ticket-title-line"><strong><%= ticket.subject %></strong><span class="ticket-number">#<%= ticket.id.to_s.rjust(4, "0") %></span></div><div class="ticket-requester"><span><%= ticket.requester_display_name %></span><span class="requester-sep">·</span><span><%= ticket.requester_display_email %></span></div><div class="next-step-hint"><span>↳</span> <%= ticket.next_action %></div></div></div>
         <div><span class="priority-pill priority-<%= ticket.priority %>"><i></i><%= priority_label(ticket.priority) %></span></div>
-        <div class="assignee-cell"><span class="avatar avatar-<%= ticket.assignee.to_s.parameterize %>"><%= ticket.assignee.present? ? initials(ticket.assignee) : "—" %></span><span><%= display_assignee(ticket.assignee) %></span></div>
-        <div><% if ticket.first_response_due? %><span class="sla-pill sla-<%= ticket.sla_state %>"><i></i><%= ticket.sla_remaining %></span><% else %><span class="sla-answered">✓ Yanıtlandı</span><% end %></div>
-        <div class="updated-cell"><%= localized_time_ago(ticket.updated_at) %> önce <span class="row-arrow">›</span></div>
+        <div class="assignee-cell"><span class="avatar avatar-<%= ticket.assignee_name.parameterize %>"><%= ticket.assignee_user ? initials(ticket.assignee_user.name) : "—" %></span><span><%= display_assignee(ticket.assignee_user&.name) %></span></div>
+        <div><% if ticket.first_response_due? %><span class="sla-pill sla-<%= ticket.sla_state %>"><i></i><%= ticket.sla_remaining %></span><% else %><span class="sla-answered">✓ <%= t("tickets.answered") %></span><% end %></div>
+        <div class="updated-cell"><%= localized_time_ago(ticket.updated_at) %><span class="row-arrow">›</span></div>
       <% end %><% end %>
-    </div><% else %><div class="empty-state"><div class="empty-illustration">✓</div><strong><%= params[:q].present? ? "Aramana uygun talep bulamadık" : "Her şey yolunda" %></strong><p><%= params[:q].present? ? "Başka bir ifade dene." : "Bu görünümde bekleyen talep yok. Yeni bir talep ekleyebilir ya da tüm kayıtları görüntüleyebilirsin." %></p><%= link_to "Tüm talepleri gör", tickets_path, class: "text-link" if @filter != "all" %></div><% end %>
-    <div class="inbox-footer"><span><strong><%= @tickets.size %></strong> talep gösteriliyor</span><span class="keyboard-hint">Her talebin sıradaki adımı <kbd>görünür</kbd></span></div>
+    </div><% else %><div class="empty-state"><div class="empty-illustration">✓</div><strong><%= params[:q].present? ? t("tickets.no_results") : t("tickets.empty") %></strong><p><%= params[:q].present? ? t("tickets.try_another") : t("tickets.no_pending") %></p><%= link_to t("tickets.see_all"), tickets_path, class: "text-link" if @filter != "all" %></div><% end %>
+    <div class="inbox-footer"><span><strong><%= @tickets.size %></strong> <%= t("tickets.shown") %></span><span class="keyboard-hint"><%= t("tickets.next_action_hint") %> <kbd>✓</kbd></span></div>
   </section>
-  <div class="footer-note"><span class="sparkle">✦</span> İzlek, ekibinin sıradaki doğru adıma odaklanmasına yardım eder.</div>
+  <div class="footer-note"><span class="sparkle">✦</span> <%= t("tickets.footer_note") %></div>
 </section>

@@ -1,0 +1,16 @@
+<% content_for :title, "#{t('auth.forgot_title')} — İzlek" %>
+<section class="auth-page">
+  <div class="auth-decoration auth-decoration-one"></div><div class="auth-decoration auth-decoration-two"></div>
+  <div class="auth-card">
+    <span class="auth-mark"><svg viewBox="0 0 32 32"><path d="M6 18.5 13.3 26 26 7"/><path d="M5 9.5h8"/></svg></span>
+    <div class="eyebrow">İZLEK · <%= t("auth.forgot_password") %></div>
+    <h1><%= t("auth.forgot_title") %></h1>
+    <p class="auth-subtitle"><%= t("auth.forgot_subtitle") %></p>
+    <%= form_with url: passwords_path, class: "auth-form" do |form| %>
+      <div class="field"><%= form.label :email_address, t("auth.email") %><%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "you@company.com", value: params[:email_address] %></div>
+      <%= form.submit t("auth.send_reset"), class: "button button-primary auth-submit" %>
+    <% end %>
+    <div class="auth-divider"><span><%= link_to t("auth.sign_in"), new_session_path, class: "text-link" %></span></div>
+  </div>
+  <p class="auth-footnote"><%= t("auth.footer_note") %></p>
+</section>

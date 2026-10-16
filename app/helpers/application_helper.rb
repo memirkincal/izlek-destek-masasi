@@ -1,18 +1,18 @@
 module ApplicationHelper
   def status_label(status)
-    { "new" => "Yeni", "open" => "Açık", "solved" => "Çözüldü" }.fetch(status, status)
+    I18n.t("tickets.status_#{status}", default: status)
   end
 
   def priority_label(priority)
-    { "low" => "Düşük", "normal" => "Normal", "high" => "Yüksek", "urgent" => "Acil" }.fetch(priority, priority)
+    I18n.t("tickets.priority_#{priority}", default: priority)
   end
 
   def display_assignee(name)
-    name.presence || "Atanmadı"
+    name.presence || I18n.t("tickets.unassigned")
   end
 
   def sla_label(ticket)
-    { on_track: "SLA uygun", at_risk: "Yanıt yaklaşmalı", breached: "Süre aşıldı", responded: "İlk yanıt verildi" }.fetch(ticket.sla_state)
+    I18n.t("sla.#{ticket.sla_state}")
   end
 
   def initials(name)
@@ -21,12 +21,16 @@ module ApplicationHelper
 
   def localized_time_ago(time)
     minutes = ((Time.current - time) / 60).floor
-    return "az önce" if minutes < 1
-    return "#{minutes} dakika" if minutes < 60
+    return I18n.t("time.just_now") if minutes < 1
+    return I18n.t("time.minutes", count: minutes) if minutes < 60
 
     hours = minutes / 60
-    return "#{hours} saat" if hours < 24
+    return I18n.t("time.hours", count: hours) if hours < 24
 
-    "#{hours / 24} gün"
+    I18n.t("time.days", count: hours / 24)
+  end
+
+  def role_label(role)
+    I18n.t("nav.#{role}")
   end
 end

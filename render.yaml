@@ -17,13 +17,5 @@ services:
       - key: RAILS_MASTER_KEY
         sync: false
       - key: DATABASE_URL
-        fromDatabase:
-          name: izlek-database
-          property: connectionString
-databases:
-  - name: izlek-database
-    plan: free
-    region: frankfurt
-    databaseName: izlek_production
-    user: izlek
+        sync: false
 
