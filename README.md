@@ -87,17 +87,20 @@ Supabase projesi Vercel Marketplace'ten oluşturulabilir. Bu, Vercel üzerinden 
 
 Bu depodaki mevcut dağıtım tanımı, Rails uygulamasını Render Web Service üzerinde ve PostgreSQL'i Supabase'te çalıştırır. Vercel'den Supabase oluşturmak bu mimariyle uyumludur; yalnızca DB bağlantısını Render'a güvenli biçimde kopyalamak gerekir. Rails'i gerçekten Vercel üzerinde çalıştırmak için uygulama mimarisini ayırmak (Vercel frontend + başka yerde Rails API) gerekir; bu mevcut dağıtımın bir parçası değildir. Render, bu Rails-rendered portal için doğrudan uyumlu hedeftir ([Render Rails 8 kılavuzu](https://render.com/docs/deploy-rails-8)).
 
-1. GitHub deposunu Render'a bağlayıp `render.yaml` Blueprint'ini oluşturun.
-2. Supabase'i Supabase Dashboard'dan veya Vercel Marketplace'ten oluşturun. Ardından Supabase projesindeki **Session pooler (5432)** bağlantısını kopyalayıp Render'daki `DATABASE_URL` gizli değişkenine girin. Rails için Transaction pooler (6543) kullanmayın; Supabase, session pooler/direct connection ve `sslmode=require` öneriyor ([Supabase Rails rehberi](https://supabase.com/docs/guides/getting-started/quickstarts/ruby-on-rails)).
-3. `RAILS_MASTER_KEY` için `config/master.key` içeriğini Render gizli değişkenine girin. Bu anahtarı repoya koymayın. Parola sıfırlama e-postalarını açmak için ayrıca `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_DOMAIN`, `SMTP_USERNAME`, `SMTP_PASSWORD`, isteğe bağlı `SMTP_AUTHENTICATION` ve `APP_HOST` secret/env değişkenlerini girin.
-4. İlk build/deploy bitince Render URL'sini `/up` ile kontrol edin; kayıt oluşturup iki ayrı kurum hesabıyla tenant izolasyonunu ve talep akışını elle doğrulayın.
-5. Gerçek canlı URL'yi bu README'ye ve ödev teslim alanına ekleyin. Şu an linki doldurulmuş gibi göstermiyoruz: ilk deploy ve URL doğrulaması yapılmadan canlı demek doğru olmaz.
+**Canlı uygulama:** [https://izlek-destek-masasi.onrender.com](https://izlek-destek-masasi.onrender.com). Servis Render'ın ücretsiz Ruby planında, veritabanı Supabase PostgreSQL'de çalışır. 16 Ekim 2026'da `/up` kontrolü HTTP 200 döndürdü; giriş ve kayıt sayfaları da canlı ortamda açıldı. Ücretsiz servis boşta kalınca uyur; ilk isteğin açılması 50 saniye veya daha uzun sürebilir.
 
-Render hesabı ve veritabanı bağlantısı için hesap sahibinin erişimi gerekir; bağlantı dizesi veya anahtarları sohbete/repoya koymayın. Vercel Marketplace kullanılırsa Supabase ortam değişkenleri Rails'in çalıştığı Render servisine otomatik aktarılmaz.
+1. `render.yaml` Blueprint'i Render'da `izlek-destek-masasi` adlı ücretsiz web servisini tanımlar. İlk dağıtım GitHub deposunun herkese açık URL'si kullanılarak yapıldı; Git sağlayıcısı bağlanmadığı için yeni commit'leri yayımlamak üzere Blueprint'ten **Manual sync** başlatın.
+2. Supabase projesi Vercel Marketplace'ten oluşturuldu. Render `DATABASE_URL` gizli değişkeni Supabase **Session pooler (5432)** bağlantısını kullanır. Rails için Transaction pooler (6543) kullanmayın; Supabase session pooler/direct connection ve `sslmode=require` öneriyor ([Supabase Rails rehberi](https://supabase.com/docs/guides/getting-started/quickstarts/ruby-on-rails)).
+3. `DATABASE_URL` ve `RAILS_MASTER_KEY` Render gizli değişkenlerinde tutulur; anahtarı repoya koymayın. Parola sıfırlama e-postaları için ayrıca `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_DOMAIN`, `SMTP_USERNAME`, `SMTP_PASSWORD`, isteğe bağlı `SMTP_AUTHENTICATION` ve `APP_HOST` ayarlanmalıdır.
+4. Yeni bir dağıtımdan sonra `/up` sağlık kontrolünü ve giriş/kayıt ekranlarını doğrulayın. Tam demo için kayıt oluşturup farklı kurum hesaplarıyla tenant izolasyonunu ve talep akışını elle deneyin.
+5. Ödev teslim alanına yukarıdaki doğrulanmış canlı URL'yi ekleyin.
+
+Render hesabı ve veritabanı bağlantısı için hesap sahibinin erişimi gerekir; gizli değerleri yalnızca Render'ın secret environment variables alanında tutun, repoya commit etmeyin. Vercel Marketplace kullanılırsa Supabase ortam değişkenleri Rails'in çalıştığı Render servisine otomatik aktarılmaz.
 
 ### Yapamadıklarım / kapsam dışı
 
-- Bu teslimde canlı servis kurulumu, Supabase erişim bilgisi ve Render hesabı onayı tamamlanmadı; bu nedenle **şimdilik doğrulanmış canlı URL yoktur**. Ödevin 0 puan riskini kaldırmak için teslimden önce deploy edip linki eklemek zorunludur.
+- Canlı URL ve `/up` sağlık kontrolü doğrulandı. Üretimde iki ayrı kurumla kayıt/talep akışının uçtan uca elle kontrolü henüz yapılmadı; teslim demosundan önce bu akışı deneyin.
+- Render ücretsiz servisi boşta kaldığında uyur; ilk istek yavaş açılabilir. GitHub sağlayıcısı Render'a bağlanmadığından yeni commitler otomatik dağıtılmaz; Blueprint'ten Manual sync gerekir.
 - Ticari Zendesk kod sayısı kamuya açık değil; 300.000 LOC yalnızca belirtilmiş tahmindir.
 - Piyasa değeri aralığı yaklaşık halka açık şirket göstergesidir. Zylo rakamları Fortune 500'ün şirket şirket ölçümü değildir.
 - SMTP sağlayıcısı yapılandırılmadan parola sıfırlama e-postası teslim edilmez; bu nedenle üretimde SMTP ayarı yokken sıfırlama bağlantısı gösterilmez. E-posta doğrulama, otomatik davet, dosya eki, faturalama, çok faktörlü giriş, denetim günlüğü ve analitik bu dilimde yoktur.
@@ -186,17 +189,20 @@ For a one-time SQL Editor setup, [db/supabase_bootstrap.sql](db/supabase_bootstr
 
 This repository's current deployment definition runs Rails on a Render Web Service and PostgreSQL on Supabase. Creating Supabase through Vercel fits this architecture; the database URL must be entered into Render. Running Rails itself on Vercel would require separating the app into a Vercel frontend and a Rails API hosted elsewhere, which is not part of the current deployment. Render is the direct fit for this Rails-rendered portal ([Render Rails 8 guide](https://render.com/docs/deploy-rails-8)).
 
-1. Connect the GitHub repository to Render and create the `render.yaml` Blueprint.
-2. Create Supabase from its dashboard or the Vercel Marketplace. In Supabase, copy the **Session pooler (5432)** connection string into Render's secret `DATABASE_URL`. Do not use the Transaction pooler (6543) as Rails' main connection; Supabase recommends the session pooler/direct connection and `sslmode=require` ([Supabase Rails guide](https://supabase.com/docs/guides/getting-started/quickstarts/ruby-on-rails)).
-3. Set `RAILS_MASTER_KEY` in Render from `config/master.key`. Never commit this key. To enable reset emails, also set `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_DOMAIN`, `SMTP_USERNAME`, `SMTP_PASSWORD`, optional `SMTP_AUTHENTICATION`, and `APP_HOST` as environment secrets/variables.
-4. After the first deploy, check the Render URL at `/up`, then manually verify signup and the ticket workflow with accounts in two separate organizations.
-5. Add the verified live URL to this README and the assignment submission. It is intentionally not presented as live until a first deploy has been verified.
+**Live app:** [https://izlek-destek-masasi.onrender.com](https://izlek-destek-masasi.onrender.com). The web service runs on Render's free Ruby plan and PostgreSQL runs on Supabase. On October 16, 2026, `/up` returned HTTP 200; the login and signup pages also loaded in production. Render's free service sleeps after inactivity, so its first response may take 50 seconds or longer.
 
-Access to the Render account and database connection is required; never paste connection strings or keys into chat or the repository. Marketplace environment variables are not automatically copied to a Rails service running on Render.
+1. The `render.yaml` Blueprint defines a free Render web service named `izlek-destek-masasi`. The first deploy used the public GitHub repository URL; because a Git provider was not connected, use **Manual sync** from the Blueprint to deploy new commits.
+2. Supabase was provisioned through the Vercel Marketplace. Render's secret `DATABASE_URL` uses Supabase's **Session pooler (5432)**. Do not use the Transaction pooler (6543) as Rails' main connection; Supabase recommends the session pooler/direct connection and `sslmode=require` ([Supabase Rails guide](https://supabase.com/docs/guides/getting-started/quickstarts/ruby-on-rails)).
+3. `DATABASE_URL` and `RAILS_MASTER_KEY` are stored as Render secret environment variables; never commit the master key. To enable reset emails, also set `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_DOMAIN`, `SMTP_USERNAME`, `SMTP_PASSWORD`, optional `SMTP_AUTHENTICATION`, and `APP_HOST`.
+4. After each deploy, verify `/up` and the login/signup pages. For a full demo, create accounts in separate organizations and manually exercise tenant isolation and the ticket workflow.
+5. Add the verified live URL above to the assignment submission.
+
+Access to the Render account and database connection is required; keep secret values in Render's environment settings and out of the repository. Marketplace environment variables are not automatically copied to a Rails service running on Render.
 
 ### What is not implemented / limitations
 
-- The live service, Supabase credentials, and Render account approval are not configured in this delivery; therefore **there is no verified live URL yet**. Deploying and adding the URL is mandatory to avoid the assignment's zero-point risk.
+- The live URL and `/up` health check are verified. The production signup/ticket flow has not yet been manually exercised with two separate organizations; test this flow before the assignment demo.
+- The Render free service sleeps after inactivity, so the first request may be slow. New commits are not deployed automatically because a GitHub provider was not connected; trigger Manual sync in the Blueprint.
 - Zendesk's actual LOC is not public; 300,000 LOC is an estimate only.
 - The market-value range is an approximate indicator for public companies. Zylo figures are not a Fortune 500 company-by-company census.
 - Without an SMTP provider, password-reset email cannot be delivered; the production reset link is hidden until SMTP is configured. Email verification, automated invitations, attachments, billing, multi-factor authentication, audit logs, and analytics are outside this slice.
