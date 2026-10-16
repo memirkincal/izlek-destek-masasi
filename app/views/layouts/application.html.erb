@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <title><%= content_for(:title) || "İzlek — Destek masası" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#f5f6f8">
+    <meta name="description" content="İzlek, destek taleplerini doğru kişiye ve doğru zamana ulaştırır.">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="<%= root_path %>"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M6 18.5 13.3 26 26 7"/><path d="M5 9.5h8"/></svg></span><span><strong>izlek</strong><small>destek masası</small></span></a>
+        <div class="workspace-label">ÇALIŞMA ALANI</div>
+        <nav class="main-nav" aria-label="Ana menü">
+          <a class="nav-link <%= current_page?(root_path) ? 'active' : '' %>" href="<%= root_path %>"><span class="nav-icon">▦</span> Gelen kutusu <span class="nav-count"><%= Ticket.active.count %></span></a>
+          <a class="nav-link" href="<%= tickets_path(filter: 'new') %>"><span class="nav-icon">◉</span> Atanmamışlar <span class="nav-count"><%= Ticket.active.where(assignee: [nil, '']).count %></span></a>
+        </nav>
+        <div class="side-section-title">DURUMLAR</div>
+        <nav class="main-nav" aria-label="Durum filtreleri">
+          <a class="nav-link" href="<%= tickets_path(filter: 'new') %>"><span class="status-dot dot-new"></span> Yeni talepler</a>
+          <a class="nav-link" href="<%= tickets_path(filter: 'open') %>"><span class="status-dot dot-open"></span> Açık</a>
+          <a class="nav-link" href="<%= tickets_path(filter: 'solved') %>"><span class="status-dot dot-solved"></span> Çözüldü</a>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="team-card"><div class="team-avatars"><span>ED</span><span>MK</span><span>DA</span></div><div><strong>Destek ekibi</strong><small>3 temsilci çevrimiçi</small></div><i></i></div>
+          <div class="profile-row"><div class="avatar avatar-self">ED</div><div><strong>Ece Demir</strong><small>Destek temsilcisi</small></div><span class="profile-menu">···</span></div>
+        </div>
+      </aside>
+      <main class="main-content">
+        <header class="topbar"><div class="breadcrumbs"><span>Destek</span><span class="crumb-sep">/</span><strong><%= content_for(:page_heading) || "Gelen kutusu" %></strong></div><div class="topbar-right"><span class="live-indicator"><i></i> Sistem çalışıyor</span><span class="topbar-divider"></span><span class="help-link">? <span>Yardım</span></span></div></header>
+        <% if notice.present? %><div class="flash flash-notice"><span>✓</span><%= notice %><button aria-label="Kapat" onclick="this.parentElement.remove()">×</button></div><% end %>
+        <% if alert.present? %><div class="flash flash-alert"><span>!</span><%= alert %><button aria-label="Kapat" onclick="this.parentElement.remove()">×</button></div><% end %>
+        <%= yield %>
+      </main>
+    </div>
+  </body>
+</html>
