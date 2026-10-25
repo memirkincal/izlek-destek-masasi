@@ -4,13 +4,64 @@
   <div class="detail-back-row"><%= link_to "← #{t('tickets.detail_back')}", root_path, class: "back-link" %><span class="detail-updated"><%= t("tickets.last_update") %> <%= localized_time_ago(@ticket.updated_at) %></span></div>
   <div class="detail-layout">
     <article class="detail-main">
-      <div class="detail-title-card"><div class="detail-title-meta"><span class="ticket-number big-number">#<%= @ticket.id.to_s.rjust(4, "0") %></span><span class="status-badge status-<%= @ticket.status %>"><i></i><%= status_label(@ticket.status) %></span><span class="priority-pill priority-<%= @ticket.priority %>"><i></i><%= priority_label(@ticket.priority) %></span></div><h1><%= @ticket.subject %></h1><p><%= @ticket.description %></p><div class="requester-line"><span class="avatar avatar-customer"><%= initials(@ticket.requester_display_name) %></span><span><strong><%= @ticket.requester_display_name %></strong><small><%= @ticket.requester_display_email %> · <%= l(@ticket.created_at, format: "%d %b, %H:%M") %></small></span></div></div>
-      <div class="timeline-heading"><strong><%= t("tickets.conversation") %></strong><span><%= @ticket.replies.count + 1 %> <%= t("tickets.replies") %></span></div>
-      <div class="conversation"><div class="conversation-item"><span class="avatar avatar-customer"><%= initials(@ticket.requester_display_name) %></span><div class="conversation-body"><div class="conversation-meta"><strong><%= @ticket.requester_display_name %></strong><span><%= t("tickets.requester") %></span><time><%= l(@ticket.created_at, format: "%d %b, %H:%M") %></time></div><p><%= @ticket.description %></p></div></div>
-        <% @ticket.replies.order(:created_at).each do |reply| %><div class="conversation-item"><span class="avatar <%= reply.user&.support_staff? ? 'avatar-self' : 'avatar-customer' %>"><%= initials(reply.author_name) %></span><div class="conversation-body"><div class="conversation-meta"><strong><%= reply.author_name %></strong><span><%= reply.user ? role_label(reply.user.role) : t("tickets.support_team") %></span><time><%= l(reply.created_at, format: "%d %b, %H:%M") %></time></div><p><%= reply.body %></p></div></div><% end %>
+      <div class="detail-title-card">
+        <div class="detail-title-meta"><span class="ticket-number big-number">#<%= @ticket.id.to_s.rjust(4, "0") %></span><span class="status-badge status-<%= @ticket.status %>"><i></i><%= status_label(@ticket.status) %></span><span class="priority-pill priority-<%= @ticket.priority %>"><i></i><%= priority_label(@ticket.priority) %></span></div>
+        <h1><%= @ticket.subject %></h1><p><%= @ticket.description %></p>
+        <div class="requester-line"><span class="avatar avatar-customer"><%= initials(@ticket.requester_display_name) %></span><span><strong><%= @ticket.requester_display_name %></strong><small><%= @ticket.requester_display_email %> · <%= l(@ticket.created_at, format: "%d %b, %H:%M") %></small></span></div>
       </div>
-      <% if @ticket.status != "solved" || current_user.requester? %><%= form_with model: [@ticket, @reply], url: replies_ticket_path(@ticket), class: "reply-card" do |form| %><div class="reply-header"><span class="avatar avatar-self"><%= initials(current_user.name) %></span><strong><%= current_user.name %></strong><span><%= t("tickets.reply_to_customer") %></span></div><%= form.text_area :body, rows: 4, placeholder: t("tickets.reply_placeholder"), required: true %><div class="reply-footer"><span><%= t("tickets.reply_sla_hint") %></span><%= form.submit t("tickets.send_reply"), class: "button button-primary button-small" %></div><% end %><% end %>
+
+      <% if current_user.support_staff? %>
+        <section class="assistant-panel" aria-labelledby="assistant-title">
+          <div class="assistant-heading"><span class="assistant-mark" aria-hidden="true">↗</span><div><h2 id="assistant-title"><%= t("assistant.title") %></h2><p><%= t("assistant.subtitle") %></p></div><span class="assistant-mode"><%= t("assistant.source_label") %></span></div>
+          <% if @assistant.knowledge_results.any? %>
+            <div class="assistant-sources">
+              <% @assistant.knowledge_results.each do |article| %>
+                <article class="assistant-source">
+                  <div><span class="assistant-source-label"><%= t("assistant.knowledge_source") %></span><strong><%= article.title %></strong><p><%= article.body %></p></div>
+                  <button type="button" class="button button-secondary button-small" data-reply-draft="<%= h(article.reply) %>"><%= t("assistant.use_draft") %></button>
+                </article>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="assistant-handoff"><strong><%= t("assistant.no_source_title") %></strong><p><%= t("assistant.no_source_body") %></p><span><%= t("assistant.human_handoff") %></span></div>
+          <% end %>
+          <div class="assistant-related">
+            <strong><%= t("assistant.related_tickets") %></strong>
+            <% if @assistant.related_tickets.any? %>
+              <div class="assistant-related-list">
+                <% @assistant.related_tickets.each do |result| %>
+                  <%= link_to ticket_path(result.ticket), class: "assistant-related-ticket" do %><span>#<%= result.ticket.id.to_s.rjust(4, "0") %></span><span><%= result.ticket.subject %></span><span class="status-badge status-<%= result.ticket.status %>"><%= status_label(result.ticket.status) %></span><% end %>
+                <% end %>
+              </div>
+            <% else %>
+              <p class="assistant-empty"><%= t("assistant.no_related_tickets") %></p>
+            <% end %>
+          </div>
+          <p class="assistant-disclosure"><%= t("assistant.disclosure") %></p>
+        </section>
+      <% end %>
+
+      <div class="timeline-heading"><strong><%= t("tickets.conversation") %></strong><span><%= @visible_replies.size + 1 %> <%= t("tickets.replies") %></span></div>
+      <div class="conversation">
+        <div class="conversation-item"><span class="avatar avatar-customer"><%= initials(@ticket.requester_display_name) %></span><div class="conversation-body"><div class="conversation-meta"><strong><%= @ticket.requester_display_name %></strong><span><%= t("tickets.requester") %></span><time><%= l(@ticket.created_at, format: "%d %b, %H:%M") %></time></div><p><%= @ticket.description %></p></div></div>
+        <% @visible_replies.each do |reply| %>
+          <div class="conversation-item <%= reply.internal? ? 'conversation-item-internal' : '' %>"><span class="avatar <%= reply.internal? ? 'avatar-note' : reply.user&.support_staff? ? 'avatar-self' : 'avatar-customer' %>"><%= initials(reply.author_name) %></span><div class="conversation-body"><div class="conversation-meta"><strong><%= reply.author_name %></strong><span><%= reply.internal? ? t("assistant.internal_note_badge") : reply.user ? role_label(reply.user.role) : t("tickets.support_team") %></span><time><%= l(reply.created_at, format: "%d %b, %H:%M") %></time></div><p><%= reply.body %></p></div></div>
+        <% end %>
+      </div>
+
+      <% if @ticket.status != "solved" || current_user.requester? %>
+        <%= form_with model: [@ticket, @reply], url: replies_ticket_path(@ticket), class: "reply-card", data: { reply_form: true } do |form| %>
+          <div class="reply-header"><span class="avatar avatar-self"><%= initials(current_user.name) %></span><strong><%= current_user.name %></strong><span><%= t("tickets.reply_to_customer") %></span></div>
+          <% if current_user.support_staff? %><label class="reply-mode"><%= form.check_box :internal, data: { internal_reply_toggle: true } %><span><strong><%= t("assistant.internal_note_toggle") %></strong><small><%= t("assistant.internal_note_hint") %></small></span></label><% end %>
+          <%= form.text_area :body, rows: 4, placeholder: t("tickets.reply_placeholder"), required: true, data: { reply_body: true } %>
+          <% if @sensitive_warnings.present? %>
+            <div class="reply-safety-warning" role="alert"><strong><%= t("assistant.sensitive_warning_title") %></strong><p><%= t("assistant.sensitive_warning_body", items: @sensitive_warnings.map { |warning| t("assistant.sensitive_types.#{warning}") }.join(", ")) %></p><label><%= check_box_tag :confirm_sensitive_send, "1", false, required: true %><span><%= t("assistant.confirm_sensitive_send") %></span></label></div>
+          <% end %>
+          <div class="reply-footer"><span><%= t("tickets.reply_sla_hint") %></span><%= form.submit t("tickets.send_reply"), class: "button button-primary button-small", data: { public_label: t("tickets.send_reply"), internal_label: t("assistant.save_internal_note"), reply_submit: true } %></div>
+        <% end %>
+      <% end %>
     </article>
+
     <aside class="detail-sidebar">
       <section class="action-card"><div class="side-card-heading"><strong><%= t("tickets.next_step") %></strong><span class="sparkle">✦</span></div><p class="next-action"><%= @ticket.next_action %></p>
         <% if current_user.support_staff? && @ticket.status == "new" %><%= button_to t("tickets.open_ticket"), open_ticket_path(@ticket), method: :patch, class: "button button-primary action-full" %>

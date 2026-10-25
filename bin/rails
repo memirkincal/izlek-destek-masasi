@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby.exe
-APP_PATH = File.expand_path("../config/application", __dir__)
-require_relative "../config/boot"
+app_root = File.expand_path("..", __dir__)
+app_root = Dir.pwd unless File.file?(File.join(app_root, "config/boot.rb"))
+APP_PATH = File.join(app_root, "config/application")
+require File.join(app_root, "config/boot")
 require "rails/commands"

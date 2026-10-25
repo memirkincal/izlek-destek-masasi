@@ -21,7 +21,7 @@ class TicketsController < ApplicationController
 
   def show
     @reply = @ticket.replies.new
-    @agents = current_user.organization.users.where(role: %w[admin agent]).order(:name)
+    load_ticket_show_context
   end
 
   def new
@@ -73,13 +73,29 @@ class TicketsController < ApplicationController
       end
     end
 
-    @reply = @ticket.replies.new(reply_params.merge(author_name: current_user.name, user: current_user, internal: false))
+    submitted_reply = reply_params
+    internal_note = current_user.support_staff? && ActiveModel::Type::Boolean.new.cast(submitted_reply[:internal]) == true
+    @reply = @ticket.replies.new(
+      body: submitted_reply[:body],
+      author_name: current_user.name,
+      user: current_user,
+      internal: internal_note
+    )
+
+    @sensitive_warnings = internal_note ? [] : ReplySafety.warnings(@reply.body)
+    if @sensitive_warnings.any? && params[:confirm_sensitive_send] != "1"
+      load_ticket_show_context
+      flash.now[:alert] = t("tickets.sensitive_reply_review")
+      render :show, status: :unprocessable_entity
+      return
+    end
+
     if @reply.valid?
       @ticket.reopen! if @ticket.status == "solved"
       @reply.save!
-      redirect_to @ticket, notice: t("tickets.reply_sent")
+      redirect_to @ticket, notice: internal_note ? t("tickets.internal_note_saved") : t("tickets.reply_sent")
     else
-      @agents = current_user.organization.users.where(role: %w[admin agent]).order(:name)
+      load_ticket_show_context
       flash.now[:alert] = t("tickets.reply_empty")
       render :show, status: :unprocessable_entity
     end
@@ -107,6 +123,13 @@ class TicketsController < ApplicationController
   end
 
   def reply_params
-    params.require(:reply).permit(:body)
+    params.require(:reply).permit(:body, :internal)
+  end
+
+  def load_ticket_show_context
+    @visible_replies = @ticket.replies.includes(:user).order(:created_at)
+    @visible_replies = @visible_replies.where(internal: false) unless current_user.support_staff?
+    @agents = current_user.organization.users.where(role: %w[admin agent]).order(:name) if current_user.support_staff?
+    @assistant = TicketAssistant.new(@ticket) if current_user.support_staff?
   end
 end

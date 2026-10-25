@@ -23,6 +23,12 @@
 
 Yönetici, temsilci ve talep sahibi rolleri vardır. Talep sahipleri yalnızca kendi taleplerini; destek ekibi yalnızca kendi kurumunun taleplerini görür. Bu akış, gerçek müşteri datası için güvenlik denetiminden geçmiş tam bir kurumsal help desk değildir.
 
+### Bu haftanın yönü — kaynaklı destek ve güvenli insan devri
+
+İzlek Yardımcısı talep sahibinin sorunu serbest metinle anlatmasına izin verir. `GEMINI_API_KEY` ayarlıysa, bilinen hassas örüntüler maskelendikten sonra mesaj ve yerel bilgi bankası Gemini 3.8 Flash'a gönderilir. Model, yapılandırılmış yanıtta kaynak kimliği ve yanıt taslağı ya da insan devri kararı döndürür; Rails kaynak kimliğini doğrular. Uygun kaynak yoksa yeni ticket açılır. API anahtarı yoksa yerel eşleştirici çalışır; Gemini çağrısı başarısızsa yedek yanıt açıkça etiketlenir. Destek ekibi ticket ayrıntısında benzer talepleri ve kaynaklı yanıt taslaklarını görür. Ekip içi notlar talep sahiplerine gösterilmez; müşteriye gidecek yanıtta hassas sayı veya sır örüntüsü varsa açık onay istenir.
+
+Gemini modu etkin olduğunda soru ve yerel bilgi bankası Google Gemini API'ye gönderilir. Maskeleme yalnızca bilinen örüntüleri yakalar ve her kişisel veriyi bulmayı garanti etmez; demo sırasında yalnızca hayalî veriler kullanın. Anahtarı kaynak koduna veya GitHub'a koymayın; `GEMINI_API_KEY` ortam değişkeni ya da dağıtım platformunun gizli değişken ayarını kullanın. Gemini modu kapalıyken ürün tamamen yerel, kural tabanlı eşleştirmeyle çalışır.
+
 ### Araştırma — Fortune 500 ve SaaS
 
 Veriler Fortune'un 2025 ABD Fortune 500 listesi (2024 mali yılı) ile Zylo'nun 2025 SaaS Management Index raporundandır. Fortune 500 şirketleri **gelire** göre sıralanır; bu listeyi tek bir “şirket değerlemesi” aralığı gibi okumamak gerekir. Halka açık şirketlerin piyasa değeri fiyat ve tarihe göre değişir; özel şirketlerin karşılaştırılabilir piyasa değeri çoğu zaman yayımlanmaz.
@@ -74,6 +80,20 @@ bin/rails server
 
 `http://localhost:3000` adresinde açılır. Geliştirme ortamı demo girişi: `ece@izlek.demo` / `IzlekDemo2026!`. Demo hesapları ve örnek talepler üretimde seed edilmez. Yerel örnek veri girmek için yalnızca development ortamında `db:seed` çalıştırın.
 
+Windows PowerShell'de Rails komutlarını `ruby bin/rails db:prepare`, `ruby bin/rails db:seed` ve `ruby bin/rails server` biçiminde çalıştırın. Klasör yolunda Türkçe karakter olduğunda başlangıç dosyası bu proje için gerekli yol uyarlamasını yapar.
+
+Gemini API ile çalıştırmak için AI Studio'dan bir API anahtarı oluşturun. Windows PowerShell'de, yalnızca mevcut terminal oturumu için sunucuyu başlatmadan önce ayarlayın:
+
+```powershell
+$env:GEMINI_API_KEY = "YOUR_NEW_API_KEY"
+$env:GEMINI_MODEL = "gemini-3.8-flash"
+bin/rails server
+```
+
+Değişken ayarlı değilse ekran yerel eşleştirme modunu gösterir. Gemini çağrısı başarılı olmazsa yerel yedek devreye girer ve ekranda belirtilir. Canlı demo için aynı değişkenleri Render servisinin gizli environment variables alanına ekleyip yeni sürümü dağıtın.
+
+İzlek Yardımcısı talep sahibi akışını yerelde denemek için: `can.ozkan@example.com` / `IzlekDemo2026!` ile giriş yapıp `/yardimci` sayfasında “Faturamı indiremedim” yazın. Kaynaklı yanıtı gördükten sonra “Temsilciye aktar” ile ticket oluşturabilirsiniz. Bu hesap yalnızca development seed verisidir.
+
 ```sh
 bin/rails db:prepare test
 bundle exec rubocop
@@ -104,6 +124,8 @@ Render hesabı ve veritabanı bağlantısı için hesap sahibinin erişimi gerek
 ### Yapamadıklarım / kapsam dışı
 
 - Canlı URL ve `/up` sağlık kontrolü doğrulandı. Geliştirme/test ortamında kayıt, ekip üyesi ekleme ve talep akışları test edilir. Üretimde iki ayrı kurumla tenant izolasyonunu teslim demosundan önce elle sınayın.
+- Gemini bağlantı yolu kodlandı, ancak yeni anahtar ile gerçek API çağrısı henüz doğrulanmadı ve bu sürüm canlıya alınmadı. Sunumdan önce `GEMINI_API_KEY` güvenli ortamda ayarlıyken bir kaynaklı yanıtı ve kaynak bulunmayan handoff'u elle deneyin.
+- Gemini'ye gönderilen hassas örüntü maskesi eksiksiz PII koruması değildir. Ücretsiz API katmanının güncel veri kullanımı ve kotaları değişebilir; yalnızca hayalî demo verisi kullanın.
 - Render ücretsiz servisi boşta kaldığında uyur; ilk istek yavaş açılabilir. GitHub sağlayıcısı Render'a bağlanmadığından yeni commitler otomatik dağıtılmaz; serviste Manual Deploy gerekir.
 - Ticari Zendesk kod sayısı kamuya açık değil; 300.000 LOC yalnızca belirtilmiş tahmindir.
 - Piyasa değeri aralığı yaklaşık halka açık şirket göstergesidir. Zylo rakamları Fortune 500'ün şirket şirket ölçümü değildir.
@@ -128,6 +150,12 @@ Render hesabı ve veritabanı bağlantısı için hesap sahibinin erişimi gerek
 5. The queue shows SLA state and the **next action** together. Tickets within 30 minutes of the deadline are at risk; overdue tickets are marked late.
 
 There are administrator, agent, and requester roles. Requesters see only their own tickets; support staff see tickets in their organization. This is not a fully audited enterprise help desk for real customer data.
+
+### This week's direction — source-backed assistance and safe handoff
+
+İzlek Assist lets a requester describe an issue in free text. When `GEMINI_API_KEY` is configured, the app sends the message and local knowledge base to Gemini 3.8 Flash after masking recognized sensitive patterns. Gemini returns a structured source ID and draft or a handoff decision; Rails validates the source ID. Missing sources create a ticket. Without a key, local matching remains available; failed Gemini calls use a clearly labeled local fallback. Support staff see related tickets and source-backed reply drafts. Internal notes stay hidden from requesters, and sensitive number or secret patterns in public replies require explicit confirmation.
+
+When Gemini mode is enabled, the request and local knowledge base are sent to Google's Gemini API. Masking detects known patterns only and cannot guarantee removal of every personal detail; use fictional demo data only. Keep the key out of source code and GitHub; configure `GEMINI_API_KEY` as an environment variable or deployment secret. When Gemini mode is disabled, the app uses local rule-based matching.
 
 ### Fortune 500 research
 
@@ -180,6 +208,16 @@ bin/rails server
 
 Open `http://localhost:3000`. Development demo login: `ece@izlek.demo` / `IzlekDemo2026!`. Demo users and sample tickets are never seeded in production.
 
+To enable Gemini locally, create an API key in AI Studio. In Windows PowerShell, set it only in the current terminal before starting Rails:
+
+```powershell
+$env:GEMINI_API_KEY = "YOUR_NEW_API_KEY"
+$env:GEMINI_MODEL = "gemini-3.8-flash"
+bin/rails server
+```
+
+Without the variable, the app labels and uses local matching. If Gemini fails, the local fallback is clearly labeled. For a live demo, add the same variables to the Render service's secret environment variables and deploy the new revision.
+
 ```sh
 bin/rails db:prepare test
 bundle exec rubocop
@@ -210,6 +248,8 @@ Access to the Render account and database connection is required; keep secret va
 ### What is not implemented / limitations
 
 - The live URL and `/up` health check are verified. Registration, team-member creation, and ticket workflow are tested locally; tenant isolation across two production organizations should still be demonstrated manually before the presentation.
+- The Gemini request path is implemented, but a real API call with a new key has not yet been verified or deployed. Before presenting it, set `GEMINI_API_KEY` as a secret and manually exercise one source-backed answer and one no-source handoff.
+- Gemini's sensitive-pattern masking is not complete PII protection. Free API data-use terms and quotas can change; use fictional demo data only.
 - The Render free service sleeps after inactivity, so the first request may be slow. New commits are not deployed automatically because a GitHub provider was not connected; use Manual Deploy on the service.
 - Zendesk's actual LOC is not public; 300,000 LOC is an estimate only.
 - The market-value range is an approximate indicator for public companies. Zylo figures are not a Fortune 500 company-by-company census.

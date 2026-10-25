@@ -10,6 +10,8 @@ Bu depo, Ruby on Rails 8 ile geliştirilmiş eğitim amaçlı multi-tenant deste
 - `Reply`: herkese açık ilk yanıt zamanını kaydeder ve ilk yanıt bekleyen yeni talebi `open` durumuna alır.
 - `User` / `Organization`: parola tabanlı oturum, yönetici/temsilci/talep sahibi rolleri ve tenant ilişkisi.
 - `TicketsController`: tenant-scoped kuyruk, arama/filtreleme, talep oluşturma, atama, yanıt ve durum eylemleri. Requester kendi taleplerini görür; support staff yalnızca kendi kurumunu görür.
+- `SupportAgentController` / `TicketAssistant` / `GeminiSupportAssistant`: serbest metinle destek, yerel kaynaklar ve ilgili ticket'lar. `GEMINI_API_KEY` ayarlıysa Gemini Interactions API yapılandırılmış kaynak kimliği/yanıt veya handoff kararı verir; Rails kaynak kimliğini doğrular. Anahtar yoksa deterministik yerel eşleştirme kullanılır; API hatası açıkça işaretlenen yerel yedeğe geçer.
+- `PrivacyMasker` / `ReplySafety`: destek yardımcısına gelen metindeki bilinen hassas örüntüleri kaydetmeden veya Gemini'ye yollamadan önce maskeler; bu maskeleme tam koruma garantisi değildir. Riskli müşteriye açık yanıt için onay ister. Ekip içi notlar yalnızca support staff tarafından görülür ve ilk yanıt SLA'sını durdurmaz.
 - `RegistrationsController` / `TeamMembersController`: yeni kurum ve yönetici kaydı, yöneticinin aynı kuruma yeni ekip üyesi eklemesi.
 - `app/views/tickets`: kuyruk, yeni talep formu, talep ayrıntısı ve konuşma görünümü.
 - `app/views/shared/_flash_messages.html.erb`: erişilebilir, özel tasarımlı toast bildirimleri; tarayıcı `alert()` penceresi kullanılmaz.
@@ -25,6 +27,7 @@ Bu depo, Ruby on Rails 8 ile geliştirilmiş eğitim amaçlı multi-tenant deste
 4. Üretimde PostgreSQL, geliştirme/testte SQLite kullanılmasını sağlayan `config/database.yml` ile `render.yaml` değişikliklerini birlikte gözden geçir. Render `DATABASE_URL`, Supabase Session pooler'a (5432) bağlanmalı; Transaction pooler kullanma.
 5. Arayüz değişikliklerinde Türkçe metinleri, klavye etiketlerini, boş/hata durumlarını ve küçük ekran düzenini koru.
 6. Tam ürün veya haricî entegrasyon varmış gibi davranma. Çalışmayan özelliği README'deki “Yapamadıklarım” listesine ekle.
+7. Gemini yanıtlarını yalnızca `config/support_knowledge.yml` kaynaklarına dayandır; modelin döndürdüğü kaynak kimliğini sunucu tarafında doğrula. API anahtarı yalnızca `GEMINI_API_KEY` secret ortam değişkeninden okunmalı; asla loglama, HTML veya kaynak kontrole koyma. Sadece hayalî demo verisi göndermeli ve model çağrısını ekranda açıkça belirt.
 
 ## Yerel doğrulama
 

@@ -1,0 +1,40 @@
+<% content_for :title, "#{t('assistant.page_title')} — İzlek" %>
+<% content_for :page_heading, t("assistant.page_title") %>
+<section class="page-content support-agent-page">
+  <div class="agent-intro">
+    <div class="eyebrow"><%= t("assistant.eyebrow") %></div>
+    <h1><%= t("assistant.page_title") %></h1>
+    <p><%= t("assistant.page_subtitle") %></p>
+  </div>
+
+  <div class="agent-chat-shell">
+    <div class="agent-chat-heading"><span class="assistant-mark" aria-hidden="true">↗</span><div><strong><%= t("assistant.chat_title") %></strong><small><%= t("assistant.chat_subtitle") %></small></div><span class="agent-online"><i></i><%= t("assistant.ready") %></span></div>
+    <div class="agent-ai-state" role="status"><strong><%= t("assistant.mode_#{@assistant_mode}") %></strong><span><%= t("assistant.mode_notice_#{@assistant_mode}") %></span></div>
+    <div class="agent-messages" aria-live="polite">
+      <div class="agent-message agent-message-assistant"><span class="agent-message-avatar" aria-hidden="true">İ</span><div><small><%= t("assistant.agent_name") %></small><p><%= t("assistant.greeting") %></p></div></div>
+      <% if @message.present? && @answer.present? %>
+        <div class="agent-message agent-message-user"><div><small><%= t("assistant.you") %></small><p><%= @message %></p></div></div>
+        <% if @redacted_types.present? %><div class="privacy-notice"><strong><%= t("assistant.privacy_masked_title") %></strong><span><%= t("assistant.privacy_masked_body", items: @redacted_types.map { |type| t("assistant.sensitive_types.#{type}") }.join(", ")) %></span></div><% end %>
+        <div class="agent-message agent-message-assistant"><span class="agent-message-avatar" aria-hidden="true">İ</span><div><small><%= t("assistant.agent_name") %></small><p><%= @answer.reply %></p><div class="agent-answer-source"><span><%= t("assistant.answer_based_on") %></span><strong><%= @answer.title %></strong></div></div></div>
+        <% if @related_tickets.any? %><div class="agent-related-note"><strong><%= t("assistant.related_tickets") %></strong><span><%= t("assistant.related_count", count: @related_tickets.size) %></span></div><% end %>
+        <div class="agent-outcome-row"><span><%= t("assistant.still_need_help") %></span><%= form_with url: support_agent_path, method: :post do |form| %><%= form.hidden_field :message, value: @message %><%= form.hidden_field :handoff, value: "1" %><%= form.submit t("assistant.handoff_button"), class: "button button-secondary button-small" %><% end %></div>
+      <% elsif @message.present? && @articles&.empty? %>
+        <div class="agent-message agent-message-user"><div><small><%= t("assistant.you") %></small><p><%= @message %></p></div></div>
+        <% if @redacted_types.present? %><div class="privacy-notice"><strong><%= t("assistant.privacy_masked_title") %></strong><span><%= t("assistant.privacy_masked_body", items: @redacted_types.map { |type| t("assistant.sensitive_types.#{type}") }.join(", ")) %></span></div><% end %>
+        <div class="agent-message agent-message-assistant agent-message-handoff"><span class="agent-message-avatar" aria-hidden="true">İ</span><div><small><%= t("assistant.agent_name") %></small><p><%= t("assistant.no_source_body") %></p><strong><%= t("assistant.human_handoff") %></strong></div></div>
+      <% end %>
+      <% if @error.present? %><div class="agent-error" role="alert"><%= @error %></div><% end %>
+    </div>
+    <% unless @message.present? && @articles&.empty? && @ticket&.persisted? %>
+      <%= form_with url: support_agent_path, method: :post, class: "agent-input-form" do |form| %>
+        <%= form.label :message, t("assistant.message_label"), class: "sr-only" %>
+        <%= form.text_area :message, value: @message, rows: 3, maxlength: 2_000, placeholder: t("assistant.message_placeholder"), required: true %>
+        <div class="agent-input-footer"><span><%= t("assistant.input_hint") %></span><%= form.submit t("assistant.send_button"), class: "button button-primary" %></div>
+      <% end %>
+    <% else %>
+      <div class="agent-handoff-footer"><span><%= t("assistant.handoff_created_prompt") %></span><%= link_to t("assistant.new_question"), support_agent_path, class: "button button-secondary button-small" %></div>
+    <% end %>
+  </div>
+
+  <div class="agent-trust-note"><span aria-hidden="true">◈</span><p><%= @gemini_configured ? t("assistant.gemini_data_notice") : t("assistant.trust_note") %></p></div>
+</section>

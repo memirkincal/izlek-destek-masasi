@@ -21,6 +21,7 @@
           <div class="workspace-chip"><span class="workspace-orb"><%= initials(current_user.organization.name) %></span><span><strong><%= current_user.organization.name %></strong><small><%= role_label(current_user.role) %></small></span><span class="workspace-chevron">⌄</span></div>
           <nav class="main-nav" aria-label="<%= t('nav.workspace') %>">
             <a class="nav-link <%= current_page?(root_path) ? 'active' : '' %>" href="<%= root_path %>"><span class="nav-icon">▦</span><%= t("nav.inbox") %><span class="nav-count"><%= current_user.requester? ? current_user.requested_tickets.active.count : current_user.organization.tickets.active.count %></span></a>
+            <% if current_user.requester? %><a class="nav-link <%= current_page?(support_agent_path) ? 'active' : '' %>" href="<%= support_agent_path %>"><span class="nav-icon">↗</span><%= t("nav.assistant") %></a><% end %>
             <% if current_user.support_staff? %><a class="nav-link <%= params[:filter] == 'unassigned' ? 'active' : '' %>" href="<%= tickets_path(filter: 'unassigned') %>"><span class="nav-icon">◉</span><%= t("nav.unassigned") %><span class="nav-count"><%= current_user.organization.tickets.active.where(assignee_user_id: nil).count %></span></a><% end %>
           </nav>
           <div class="side-section-title"><%= t("nav.statuses") %></div>

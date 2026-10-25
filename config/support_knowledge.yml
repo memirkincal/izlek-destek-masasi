@@ -1,0 +1,42 @@
+tr:
+  - id: invoice-download
+    title: Fatura PDF'i indirme
+    terms: "fatura invoice pdf indirme bağlantı boş sayfa belge makbuz"
+    body: "Faturalar sayfasındaki belgeyi yeni sekmede açıp indirme simgesini kullanın. Bağlantı boş sayfa açıyorsa temsilci fatura kaydını kontrol etmelidir."
+    reply: "Faturalar sayfasındaki belgeyi yeni sekmede açıp indirme simgesini deneyebilirsin. Bağlantı boş sayfa açılmaya devam ederse 'Temsilciye aktar' düğmesiyle fatura kaydının incelenmesini iste."
+  - id: plan-payment
+    title: Ödeme alındı, plan güncellenmedi
+    terms: "ödeme ücret kart çekim tahsil plan abonelik paket hesap ücretsiz satın alındı payment charged billing subscription account"
+    body: "Ödeme onayı ile plan değişikliği kısa süre farklı görünebilir. Önce ödeme kaydı ve hesap planı birlikte kontrol edilir; doğrulanmadan ikinci kez ödeme alınmaz."
+    reply: "Planın güncellenmesi ödeme onayından kısa süre sonra görünebilir. Aynı işlem için yeniden ödeme yapma. Planın hâlâ güncellenmediyse 'Temsilciye aktar' düğmesiyle ödeme kaydının ve planının birlikte incelenmesini iste."
+  - id: mobile-session
+    title: Mobil uygulamada oturumun kapanması
+    terms: "mobil uygulama telefon oturum giriş kapanıyor yeniden giriş parola güncelleme mobile app session login"
+    body: "Önce uygulama sürümünü ve işletim sistemi sürümünü doğrulayın. Sorun sürerse oturum kayıtları temsilci tarafından incelenmelidir."
+    reply: "Önce uygulamanın ve işletim sisteminin sürümünü kontrol et. Uygulama güncelse ve sorun devam ediyorsa 'Temsilciye aktar' düğmesiyle oturum kayıtlarının incelenmesini iste."
+  - id: team-member
+    title: Çalışma alanına ekip üyesi ekleme
+    terms: "ekip üye kullanıcı davet yeni temsilci requester team member invite workspace"
+    body: "Yöneticiler Ekip üyeleri sayfasından aynı çalışma alanına temsilci veya talep sahibi ekleyebilir. E-posta adresi platform genelinde benzersiz olmalıdır."
+    reply: "Merhaba, yönetici hesabıyla Ekip üyeleri sayfasını açıp yeni üyeyi ekleyebilirsin. E-posta adresi daha önce kullanıldıysa o kişi mevcut hesabıyla giriş yapmalıdır."
+en:
+  - id: invoice-download
+    title: Downloading an invoice PDF
+    terms: "invoice pdf download link blank page receipt document"
+    body: "Open the invoice from the billing page in a new tab and use its download control. If the link opens a blank page, an agent should check the invoice record."
+    reply: "Open the invoice from the billing page in a new tab and try its download control. If the page is still blank, use 'Send to an agent' to request a review of the invoice record."
+  - id: plan-payment
+    title: Payment received, plan not updated
+    terms: "payment fee card charge plan subscription package account free purchase billing"
+    body: "The payment confirmation and plan change may appear at different times. Check the payment record and account plan together; do not charge the customer again before verifying the first payment."
+    reply: "The plan update may appear shortly after the payment confirmation. Do not submit the payment again. If the plan is still unchanged, use 'Send to an agent' to request a review of the payment record and plan together."
+  - id: mobile-session
+    title: Mobile app session keeps closing
+    terms: "mobile app phone session login closes sign in password update"
+    body: "First confirm the app and operating-system versions. If the issue continues, an agent should inspect the session records."
+    reply: "First check your app and operating-system versions. If the app is current and the issue continues, use 'Send to an agent' to request a review of the session records."
+  - id: team-member
+    title: Adding a teammate to the workspace
+    terms: "team member user invite new agent requester workspace"
+    body: "Administrators can add an agent or requester from Team members. Email addresses must be unique across the platform."
+    reply: "Hi, an administrator can add a teammate from Team members. If the email address is already in use, that person should sign in to their existing account."
