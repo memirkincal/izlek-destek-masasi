@@ -4,7 +4,7 @@
 
 - Ürün: İzlek, kurumların müşteri taleplerini atadığı, yanıtladığı ve ilk yanıt SLA'sını izlediği destek masası MVP'si.
 - Geçen haftanın son commit'i: [`e8245da`](https://github.com/memirkincal/izlek-destek-masasi/commit/e8245daf6db1a20cab0acf815a88f616b2eddafa).
-- Canlı URL: [https://izlek-destek-masasi.onrender.com](https://izlek-destek-masasi.onrender.com). Bu haftaki çalışma henüz canlıya alınmadı; URL mevcut önceki sürümü gösteriyor.
+- Canlı URL: [https://izlek-destek-masasi.onrender.com](https://izlek-destek-masasi.onrender.com). `c206399` sürümü 25 Ekim 2026'da Render'da Live durumuna geçti; `/up`, giriş ve kayıt sayfaları HTTP 200 döndürdü.
 - Kaynak repo: [memirkincal/izlek-destek-masasi](https://github.com/memirkincal/izlek-destek-masasi).
 - Bu ürüne kim, neden para ödüyor? Destek ekipleri; taleplerin kaybolmaması, sorumlunun belli olması, yanıt süresinin izlenmesi ve ekip işinin tek yerde yürütülmesi için destek masası yazılımına ödeme yapar. İzlek'in kurumsal ölçekte bu değeri kanıtladığı iddia edilmiyor.
 
@@ -26,9 +26,9 @@
 - Temsilci görünümüne ilgili ticket'lar ve kaynaklı yanıt taslakları eklendi. Ekip içi notlar talep sahiplerine gösterilmez; bu notlar ilk yanıt SLA'sını durdurmaz. Müşteriye gidecek yanıtta riskli sayı/sır örüntüsü bulunursa gönderim için açık onay istenir. Kanıt: `app/controllers/tickets_controller.rb`, `app/views/tickets/show.html.erb`, `app/services/reply_safety.rb`.
 - Tamamen hayalî yerel demo talepleri ödeme/sipariş örüntülerini göstermesi için genişletildi. `db/seeds.rb` yalnızca development ortamında çalışır; gerçek müşteri verisi eklenmedi.
 - Yerel demo adımı: `bin/rails db:prepare`, `bin/rails db:seed`, sonra `can.ozkan@example.com` / `IzlekDemo2026!` ile giriş yapıp `/yardimci` sayfasında “Faturamı indiremedim” yaz. Kaynaklı yanıtı gör; “Temsilciye aktar” ile ticket aç. Temsilci görünürlüğü için `mert@izlek.demo` / `IzlekDemo2026!` hesabıyla gelen kutusuna geç. Bu hesaplar yalnızca yerel development seed verisidir.
-- Gemini entegrasyon kodu hazır; geçerli anahtar henüz `GEMINI_API_KEY` ortam değişkenine güvenli biçimde konmadı. Yeni anahtarla gerçek çağrı elle doğrulanmalı. Yeni çalışma ağacındaki değişiklikler henüz commit edilmedi veya dağıtılmadı; canlı URL önceki sürümü gösterir.
+- Gemini entegrasyon kodu canlıda; Render'da `GEMINI_API_KEY` henüz ayarlı değil. Şu anda yerel bilgi bankası modu çalışır; yeni anahtarla gerçek çağrı elle doğrulanmalıdır.
 - Yerel doğrulama (25 Ekim 2026): SQLite geliştirme veritabanında beş migration `up`; `db:prepare db:seed` başarılı. Gerçek klasör yolundan Rails sunucusu açıldı; `/up` ve giriş sayfası HTTP 200 döndü. Demo talep sahibiyle giriş yapılıp `/yardimci` ekranında “Faturamı indiremedim” sorusuna “Fatura PDF'i indirme” kaynağıyla yerel yanıt alındı. `ruby bin/rails test`: 34 test, 194 assertion, sıfır hata; RuboCop: 57 dosyada ihlal yok; Brakeman: sıfır uyarı; Bundler Audit: açık yok; üretim asset derlemesi başarılı. Testler Gemini protokolünü sahte HTTP yanıtıyla doğruladı.
-- Gerçek Gemini API çağrısı ve yeni canlı dağıtım henüz doğrulanmadı; ortamda güvenli yeni `GEMINI_API_KEY` ayarlı değil. Bu kayıt başarılı canlı model çağrısı iddiası değildir.
+- GitHub CI `c206399` için PostgreSQL 16 üzerinde geçti. Render dağıtımı Live durumunda; yeni boş `izlek-destek-masasi-db` PostgreSQL veritabanı açılışta `db:prepare` ile hazırlandı. Önceki Supabase bağlantısı `tenant/user not found` hatası verdiği ve proje bu hesapta erişilebilir olmadığı için eski canlı kayıtlar taşınmadı. Ücretsiz Render veritabanı 24 Kasım 2026'da sona erer. Gerçek Gemini API çağrısı hâlâ doğrulanmadı; güvenli yeni anahtar ayarlı değil.
 - Vaat edilip yapılmayanlar: embedding tabanlı arama, dış web sitesine gömülen widget, gerçek ödeme/CRM entegrasyonu, otomatik kök neden analizi ve dış müşteriye otomatik e-posta. Model yanıttaki kaynağı yalnızca yerel YAML bilgi bankasından seçer.
 
 ## Zaman

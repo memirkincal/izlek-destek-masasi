@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/memirkincal/izlek-destek-masasi/actions/workflows/ci.yml/badge.svg)](https://github.com/memirkincal/izlek-destek-masasi/actions/workflows/ci.yml)
 
-- **Canlı uygulama / Live app:** [izlek-destek-masasi.onrender.com](https://izlek-destek-masasi.onrender.com) — Render üzerinde canlı; son doğrulanan uygulama dağıtımı `be188ff`.
+- **Canlı uygulama / Live app:** [izlek-destek-masasi.onrender.com](https://izlek-destek-masasi.onrender.com) — Render üzerinde canlı; son doğrulanan uygulama dağıtımı `c206399`.
 - **Kaynak / Source:** [GitHub reposu](https://github.com/memirkincal/izlek-destek-masasi)
 
 ---
@@ -101,7 +101,7 @@ bundle exec rubocop
 
 SLA ve durum geçişleri `travel_to` ile sabit zamanda test edilir. GitHub Actions, PostgreSQL 16 servisinde migration ve testleri çalıştırır; README rozeti en son workflow durumunu gösterir.
 
-### Canlıya alma: Rails sunucusu + Supabase (Vercel Marketplace seçeneği)
+### Canlıya alma: Rails sunucusu + Render PostgreSQL
 
 Ödev **canlı URL'yi açıkça zorunlu tutuyor**; yerel sunum yeterli değil. İzlek, Rails 8 ile sunucu tarafında çalışan tek parça bir uygulamadır. Vercel'in Ruby desteği Beta Function'lar içindir ve her `.rb` dosyası tek bir HTTP handler tanımlar; Vercel'in Rails rehberi de Rails'i Vercel'de çalışan ayrı bir frontend'e API olarak bağlama yaklaşımını anlatır. Bu nedenle mevcut Rails portalı Vercel'e doğrudan dağıtılacak şekilde belgelenmemiştir ([Vercel Ruby runtime](https://vercel.com/docs/functions/runtimes/ruby), [Vercel Rails yaklaşımı](https://vercel.com/kb/guide/does-vercel-support-ruby-on-rails-applications)).
 
@@ -109,12 +109,12 @@ Supabase projesi Vercel Marketplace'ten oluşturulabilir. Bu, Vercel üzerinden 
 
 İlk kurulumu Supabase SQL Editor'dan yapmak isterseniz [db/supabase_bootstrap.sql](db/supabase_bootstrap.sql) dosyası güncel Rails tablolarını, indeksleri, yabancı anahtarları ve migration takip kayıtlarını tek seferde kurar. Yalnızca boş/yeni veritabanında bir kez çalıştırın. Sonraki şema değişikliklerinin kaynağı Rails migration dosyalarıdır.
 
-Bu depodaki mevcut dağıtım tanımı, Rails uygulamasını Render Web Service üzerinde ve PostgreSQL'i Supabase'te çalıştırır. Vercel'den Supabase oluşturmak bu mimariyle uyumludur; yalnızca DB bağlantısını Render'a güvenli biçimde kopyalamak gerekir. Rails'i gerçekten Vercel üzerinde çalıştırmak için uygulama mimarisini ayırmak (Vercel frontend + başka yerde Rails API) gerekir; bu mevcut dağıtımın bir parçası değildir. Render, bu Rails-rendered portal için doğrudan uyumlu hedeftir ([Render Rails 8 kılavuzu](https://render.com/docs/deploy-rails-8)).
+Canlı Rails uygulaması ve PostgreSQL veritabanı Render'ın Frankfurt bölgesindedir. Önceki Vercel Marketplace Supabase projesi 25 Ekim 2026'da erişilebilir değildi; eski bağlantı `tenant/user not found` hatası verdi. Yeni boş Render PostgreSQL veritabanına geçildi, eski canlı kayıtlar taşınmadı. Supabase/Vercel akışı alternatif olarak belgelenmiştir. Rails'i gerçekten Vercel üzerinde çalıştırmak için uygulama mimarisini ayırmak gerekir; bu mevcut dağıtımın bir parçası değildir ([Render Rails 8 kılavuzu](https://render.com/docs/deploy-rails-8)).
 
-**Canlı uygulama:** [https://izlek-destek-masasi.onrender.com](https://izlek-destek-masasi.onrender.com). Servis Render'ın ücretsiz Ruby planında, veritabanı Supabase PostgreSQL'de çalışır. 16 Ekim 2026'da `/up` kontrolü HTTP 200 döndürdü; giriş ve kayıt sayfaları da canlı ortamda açıldı. Ücretsiz servis boşta kalınca uyur; ilk isteğin açılması 50 saniye veya daha uzun sürebilir.
+**Canlı uygulama:** [https://izlek-destek-masasi.onrender.com](https://izlek-destek-masasi.onrender.com). `c206399` dağıtımı 25 Ekim 2026'da Render'da Live durumuna geçti; `/up`, giriş ve kayıt sayfaları HTTP 200 döndürdü. Web servisi ve PostgreSQL ücretsiz plandadır. Web servisi boşta kalınca uyur; veritabanı **24 Kasım 2026'da sona erer** ve [Render'ın ücretsiz veritabanı koşullarına](https://render.com/docs/free) göre daha sonra silinir. Kalıcı kullanım için bu tarihten önce başka bir veritabanına geçmek veya planı yükseltmek gerekir.
 
 1. `render.yaml` Blueprint'i Render'da `izlek-destek-masasi` adlı ücretsiz web servisini tanımlar. İlk dağıtım GitHub deposunun herkese açık URL'si kullanılarak yapıldı; Git sağlayıcısı bağlanmadığı için yeni commit'leri yayımlamak üzere servis sayfasından **Manual Deploy → Deploy latest commit** seçin.
-2. Supabase projesi Vercel Marketplace'ten oluşturuldu. Render `DATABASE_URL` gizli değişkeni Supabase **Session pooler (5432)** bağlantısını kullanır. Rails için Transaction pooler (6543) kullanmayın; Supabase session pooler/direct connection ve `sslmode=require` öneriyor ([Supabase Rails rehberi](https://supabase.com/docs/guides/getting-started/quickstarts/ruby-on-rails)).
+2. Render `DATABASE_URL` gizli değişkeni aynı bölgedeki `izlek-destek-masasi-db` veritabanının **internal URL** bağlantısını kullanır. `bin/render-start.sh` açılışta `db:prepare` çalıştırır. Yeni veritabanı boş kurulduğundan eski üretim hesaplarıyla giriş yapılamaz; yönetici hesabını kayıt ekranından yeniden oluşturun.
 3. `DATABASE_URL` ve `RAILS_MASTER_KEY` Render gizli değişkenlerinde tutulur; anahtarı repoya koymayın. Parola sıfırlama e-postaları için ayrıca `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_DOMAIN`, `SMTP_USERNAME`, `SMTP_PASSWORD`, isteğe bağlı `SMTP_AUTHENTICATION` ve `APP_HOST` ayarlanmalıdır.
 4. Yeni bir dağıtımdan sonra `/up` sağlık kontrolünü ve giriş/kayıt ekranlarını doğrulayın. Tam demo için kayıt oluşturup farklı kurum hesaplarıyla tenant izolasyonunu ve talep akışını elle deneyin.
 5. Ödev teslim alanına yukarıdaki doğrulanmış canlı URL'yi ekleyin.
@@ -124,7 +124,7 @@ Render hesabı ve veritabanı bağlantısı için hesap sahibinin erişimi gerek
 ### Yapamadıklarım / kapsam dışı
 
 - Canlı URL ve `/up` sağlık kontrolü doğrulandı. Geliştirme/test ortamında kayıt, ekip üyesi ekleme ve talep akışları test edilir. Üretimde iki ayrı kurumla tenant izolasyonunu teslim demosundan önce elle sınayın.
-- Gemini bağlantı yolu kodlandı, ancak yeni anahtar ile gerçek API çağrısı henüz doğrulanmadı ve bu sürüm canlıya alınmadı. Sunumdan önce `GEMINI_API_KEY` güvenli ortamda ayarlıyken bir kaynaklı yanıtı ve kaynak bulunmayan handoff'u elle deneyin.
+- Gemini bağlantı yolu canlıya alındı, ancak Render'da `GEMINI_API_KEY` henüz yok ve gerçek API çağrısı doğrulanmadı. Yardımcı şu anda yerel bilgi bankası modundadır. Sunumdan önce güvenli yeni anahtarı ayarlayıp bir kaynaklı yanıtı ve kaynak bulunmayan handoff'u elle deneyin.
 - Gemini'ye gönderilen hassas örüntü maskesi eksiksiz PII koruması değildir. Ücretsiz API katmanının güncel veri kullanımı ve kotaları değişebilir; yalnızca hayalî demo verisi kullanın.
 - Render ücretsiz servisi boşta kaldığında uyur; ilk istek yavaş açılabilir. GitHub sağlayıcısı Render'a bağlanmadığından yeni commitler otomatik dağıtılmaz; serviste Manual Deploy gerekir.
 - Ticari Zendesk kod sayısı kamuya açık değil; 300.000 LOC yalnızca belirtilmiş tahmindir.
@@ -225,7 +225,7 @@ bundle exec rubocop
 
 SLA and state-transition tests use `travel_to`. GitHub Actions runs migrations and tests against PostgreSQL 16; the badge above shows the latest workflow status.
 
-### Deployment: Rails server + Supabase (Vercel Marketplace option)
+### Deployment: Rails server + Render PostgreSQL
 
 The assignment **explicitly requires a live URL**; a local demo is insufficient. İzlek is a monolithic Rails 8 server-rendered application. Vercel's Ruby support is for beta Functions where each `.rb` file defines one HTTP handler; Vercel's Rails guide describes using Rails as an API for a separate frontend hosted on Vercel. The current Rails portal is therefore not documented as a direct Vercel deployment ([Vercel Ruby runtime](https://vercel.com/docs/functions/runtimes/ruby), [Vercel Rails guidance](https://vercel.com/kb/guide/does-vercel-support-ruby-on-rails-applications)).
 
@@ -233,12 +233,12 @@ Supabase can be provisioned through the Vercel Marketplace. It remains a real Su
 
 For a one-time SQL Editor setup, [db/supabase_bootstrap.sql](db/supabase_bootstrap.sql) creates the current Rails tables, indexes, foreign keys, and migration tracking records. Run it only once against a new, empty database. Future schema changes should use the Rails migration files.
 
-This repository's current deployment definition runs Rails on a Render Web Service and PostgreSQL on Supabase. Creating Supabase through Vercel fits this architecture; the database URL must be entered into Render. Running Rails itself on Vercel would require separating the app into a Vercel frontend and a Rails API hosted elsewhere, which is not part of the current deployment. Render is the direct fit for this Rails-rendered portal ([Render Rails 8 guide](https://render.com/docs/deploy-rails-8)).
+The live Rails app and PostgreSQL database run in Render's Frankfurt region. On October 25, 2026, the former Vercel Marketplace Supabase project was inaccessible and its connection returned `tenant/user not found`. The app was switched to a new empty Render PostgreSQL database; old production records were not migrated. Supabase/Vercel remains documented as an alternative. Running Rails itself on Vercel would require splitting the architecture and is outside this deployment ([Render Rails 8 guide](https://render.com/docs/deploy-rails-8)).
 
-**Live app:** [https://izlek-destek-masasi.onrender.com](https://izlek-destek-masasi.onrender.com). The web service runs on Render's free Ruby plan and PostgreSQL runs on Supabase. The `/up` health endpoint and login/signup pages were verified in production on October 16, 2026; the latest verified app commit is `be188ff`. Render's free service sleeps after inactivity, so its first response may take 50 seconds or longer.
+**Live app:** [https://izlek-destek-masasi.onrender.com](https://izlek-destek-masasi.onrender.com). Commit `c206399` was Live on Render on October 25, 2026; `/up`, sign-in and registration returned HTTP 200. Both web service and PostgreSQL are on Free plans. The web service sleeps after inactivity. The database **expires November 24, 2026** and will later be deleted under [Render's Free database terms](https://render.com/docs/free); migrate it or upgrade before then for continuity.
 
 1. The `render.yaml` Blueprint defines a free Render web service named `izlek-destek-masasi`. The first deploy used the public GitHub repository URL; because a Git provider was not connected, use the service's **Manual Deploy → Deploy latest commit** action for new commits.
-2. Supabase was provisioned through the Vercel Marketplace. Render's secret `DATABASE_URL` uses Supabase's **Session pooler (5432)**. Do not use the Transaction pooler (6543) as Rails' main connection; Supabase recommends the session pooler/direct connection and `sslmode=require` ([Supabase Rails guide](https://supabase.com/docs/guides/getting-started/quickstarts/ruby-on-rails)).
+2. Render's secret `DATABASE_URL` uses the **internal URL** for `izlek-destek-masasi-db` in the same region. `bin/render-start.sh` runs `db:prepare` on boot. This is a fresh database, so prior production accounts need to be recreated through registration.
 3. `DATABASE_URL` and `RAILS_MASTER_KEY` are stored as Render secret environment variables; never commit the master key. To enable reset emails, also set `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_DOMAIN`, `SMTP_USERNAME`, `SMTP_PASSWORD`, optional `SMTP_AUTHENTICATION`, and `APP_HOST`.
 4. After each deploy, verify `/up` and the login/signup pages. For a full demo, create accounts in separate organizations and manually exercise tenant isolation and the ticket workflow.
 5. Add the verified live URL above to the assignment submission.
@@ -248,7 +248,7 @@ Access to the Render account and database connection is required; keep secret va
 ### What is not implemented / limitations
 
 - The live URL and `/up` health check are verified. Registration, team-member creation, and ticket workflow are tested locally; tenant isolation across two production organizations should still be demonstrated manually before the presentation.
-- The Gemini request path is implemented, but a real API call with a new key has not yet been verified or deployed. Before presenting it, set `GEMINI_API_KEY` as a secret and manually exercise one source-backed answer and one no-source handoff.
+- The Gemini request path is deployed, but `GEMINI_API_KEY` is not set on Render and a real API call has not been verified. The assistant currently uses the local knowledge base. Before presenting live AI, set a safe new key as a secret and manually exercise one source-backed answer and one no-source handoff.
 - Gemini's sensitive-pattern masking is not complete PII protection. Free API data-use terms and quotas can change; use fictional demo data only.
 - The Render free service sleeps after inactivity, so the first request may be slow. New commits are not deployed automatically because a GitHub provider was not connected; use Manual Deploy on the service.
 - Zendesk's actual LOC is not public; 300,000 LOC is an estimate only.

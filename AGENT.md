@@ -24,7 +24,7 @@ Bu depo, Ruby on Rails 8 ile geliştirilmiş eğitim amaçlı multi-tenant deste
 1. SLA veya durum akışı değişince model testlerini sabit zamanla güncelle; yeni davranışı entegrasyon testinde de doğrula.
 2. Gerçek kişi verisi/üretim verisi ekleme. `db/seeds.rb` yalnızca hayalî demo kayıtları içermeli ve tekrar çalıştırılabilir kalmalı.
 3. `config/master.key`, credentials anahtarı, veritabanı ve log dosyalarını sürüm kontrolüne ekleme. Deploy gizlileri yalnızca sağlayıcının ortam değişkenlerinde tutulmalı.
-4. Üretimde PostgreSQL, geliştirme/testte SQLite kullanılmasını sağlayan `config/database.yml` ile `render.yaml` değişikliklerini birlikte gözden geçir. Render `DATABASE_URL`, Supabase Session pooler'a (5432) bağlanmalı; Transaction pooler kullanma.
+4. Üretimde PostgreSQL, geliştirme/testte SQLite kullanılmasını sağlayan `config/database.yml` ile `render.yaml` değişikliklerini birlikte gözden geçir. Render `DATABASE_URL`, aynı Frankfurt bölgesindeki `izlek-destek-masasi-db` veritabanının internal URL'sine bağlanır. Ücretsiz veritabanı 24 Kasım 2026'da sona erer; kalıcı kullanım için öncesinde taşı veya planı yükselt.
 5. Arayüz değişikliklerinde Türkçe metinleri, klavye etiketlerini, boş/hata durumlarını ve küçük ekran düzenini koru.
 6. Tam ürün veya haricî entegrasyon varmış gibi davranma. Çalışmayan özelliği README'deki “Yapamadıklarım” listesine ekle.
 7. Gemini yanıtlarını yalnızca `config/support_knowledge.yml` kaynaklarına dayandır; modelin döndürdüğü kaynak kimliğini sunucu tarafında doğrula. API anahtarı yalnızca `GEMINI_API_KEY` secret ortam değişkeninden okunmalı; asla loglama, HTML veya kaynak kontrole koyma. Sadece hayalî demo verisi göndermeli ve model çağrısını ekranda açıkça belirt.
