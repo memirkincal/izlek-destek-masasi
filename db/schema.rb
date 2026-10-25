@@ -10,7 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_16_130300) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_26_100000) do
+  create_table "knowledge_articles", force: :cascade do |t|
+    t.integer "organization_id", null: false
+    t.string "locale", null: false
+    t.string "source_key", null: false
+    t.string "title", null: false
+    t.text "terms", null: false
+    t.text "body", null: false
+    t.text "reply", null: false
+    t.boolean "published", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id", "locale", "source_key"], name: "index_knowledge_articles_on_workspace_locale_source", unique: true
+    t.index ["organization_id"], name: "index_knowledge_articles_on_organization_id"
+  end
+
   create_table "organizations", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -73,6 +88,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_130300) do
     t.index ["organization_id"], name: "index_users_on_organization_id"
   end
 
+  add_foreign_key "knowledge_articles", "organizations"
   add_foreign_key "replies", "tickets"
   add_foreign_key "replies", "users"
   add_foreign_key "sessions", "users"

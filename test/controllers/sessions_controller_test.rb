@@ -6,6 +6,19 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "new" do
     get new_session_path
     assert_response :success
+    assert_select ".portal-choice-card", 2
+  end
+
+  test "selected portal accepts only its own account type" do
+    requester = users(:two)
+
+    post session_path, params: { portal: "staff", email_address: requester.email_address, password: "password" }
+    assert_redirected_to new_session_path(portal: "staff")
+    assert_nil cookies[:session_id]
+
+    post session_path, params: { portal: "requester", email_address: requester.email_address, password: "password" }
+    assert_redirected_to root_path
+    assert cookies[:session_id]
   end
 
   test "create with valid credentials" do

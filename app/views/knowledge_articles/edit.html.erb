@@ -1,0 +1,3 @@
+<% content_for :title, "#{t('knowledge.edit')} — İzlek" %>
+<% content_for :page_heading, t("knowledge.title") %>
+<section class="page-content narrow-page knowledge-page"><div class="page-heading-row"><div><div class="eyebrow"><%= t("knowledge.eyebrow") %></div><h1><%= t("knowledge.edit") %></h1><p class="page-subtitle"><%= @article.title %></p></div><%= link_to t("knowledge.back"), knowledge_articles_path(language: @article.locale), class: "back-link" %></div><%= render "form", article: @article %></section>

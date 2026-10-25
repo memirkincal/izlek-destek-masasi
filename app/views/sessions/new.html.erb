@@ -1,19 +1,28 @@
 <% content_for :title, "#{t('auth.sign_in')} — İzlek" %>
-<section class="auth-page">
+<section class="auth-page auth-portal-page">
   <div class="auth-decoration auth-decoration-one"></div><div class="auth-decoration auth-decoration-two"></div>
-  <div class="auth-card">
-    <span class="auth-mark"><svg viewBox="0 0 32 32"><path d="M6 18.5 13.3 26 26 7"/><path d="M5 9.5h8"/></svg></span>
-    <div class="eyebrow"><%= t("auth.sign_in") %> · İZLEK</div>
-    <h1><%= t("auth.sign_in_title") %></h1>
-    <p class="auth-subtitle"><%= t("auth.sign_in_subtitle") %></p>
-    <%= form_with url: session_path, class: "auth-form" do |form| %>
-      <div class="field"><%= form.label :email_address, t("auth.email") %><%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "you@company.com" %></div>
-      <div class="field"><div class="field-label-row"><%= form.label :password, t("auth.password") %><% if !Rails.env.production? || ENV["SMTP_ADDRESS"].present? %><%= link_to t("auth.forgot_password"), new_password_path, class: "text-link" %><% end %></div><%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "••••••••••" %></div>
-      <%= form.submit t("auth.sign_in"), class: "button button-primary auth-submit" %>
-    <% end %>
-    <div class="auth-divider"><span><%= t("auth.no_account") %></span></div>
-    <%= link_to t("auth.create_account"), new_registration_path, class: "button button-secondary auth-submit" %>
-    <% if Rails.env.development? %><p class="demo-credentials"><span>✦</span><%= t("auth.demo_hint") %></p><% end %>
-  </div>
+  <% if @portal.nil? %>
+    <div class="portal-choice">
+      <div class="eyebrow"><%= t("auth.portal_eyebrow") %></div><h1><%= t("auth.portal_title") %></h1><p><%= t("auth.portal_subtitle") %></p>
+      <div class="portal-choice-grid">
+        <%= link_to new_session_path(portal: "requester"), class: "portal-choice-card" do %><span class="portal-choice-icon requester-icon">✦</span><strong><%= t("auth.requester_portal") %></strong><small><%= t("auth.requester_portal_hint") %></small><em><%= t("auth.continue") %> →</em><% end %>
+        <%= link_to new_session_path(portal: "staff"), class: "portal-choice-card" do %><span class="portal-choice-icon staff-icon">▦</span><strong><%= t("auth.staff_portal") %></strong><small><%= t("auth.staff_portal_hint") %></small><em><%= t("auth.continue") %> →</em><% end %>
+      </div>
+    </div>
+  <% else %>
+    <div class="auth-card">
+      <%= link_to "← #{t('auth.change_portal')}", new_session_path, class: "portal-back-link" %>
+      <span class="auth-mark"><svg viewBox="0 0 32 32"><path d="M6 18.5 13.3 26 26 7"/><path d="M5 9.5h8"/></svg></span>
+      <div class="eyebrow"><%= t("auth.sign_in") %> · İZLEK</div><h1><%= t(@portal == "requester" ? "auth.requester_portal" : "auth.staff_portal") %></h1><p class="auth-subtitle"><%= t(@portal == "requester" ? "auth.requester_sign_in_hint" : "auth.staff_sign_in_hint") %></p>
+      <%= form_with url: session_path, class: "auth-form" do |form| %>
+        <%= form.hidden_field :portal, value: @portal %>
+        <div class="field"><%= form.label :email_address, t("auth.email") %><%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "you@company.com" %></div>
+        <div class="field"><div class="field-label-row"><%= form.label :password, t("auth.password") %><% if !Rails.env.production? || ENV["SMTP_ADDRESS"].present? %><%= link_to t("auth.forgot_password"), new_password_path, class: "text-link" %><% end %></div><%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "••••••••••" %></div>
+        <%= form.submit t("auth.sign_in"), class: "button button-primary auth-submit" %>
+      <% end %>
+      <% if @portal == "staff" %><div class="auth-divider"><span><%= t("auth.no_account") %></span></div><%= link_to t("auth.create_account"), new_registration_path, class: "button button-secondary auth-submit" %><% end %>
+      <% if Rails.env.development? %><p class="demo-credentials"><span>✦</span><%= t(@portal == "requester" ? "auth.demo_requester_hint" : "auth.demo_hint") %></p><% end %>
+    </div>
+  <% end %>
   <p class="auth-footnote"><%= t("auth.footer_note") %></p>
 </section>

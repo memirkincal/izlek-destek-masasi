@@ -1,0 +1,39 @@
+invoice:
+  organization: demo
+  locale: tr
+  source_key: invoice-download
+  title: Fatura PDF'i indirme
+  terms: fatura invoice pdf indirme bağlantı boş sayfa belge makbuz
+  body: Faturalar sayfasındaki belgeyi yeni sekmede açıp indirme simgesini kullanın.
+  reply: Faturalar sayfasındaki belgeyi yeni sekmede açıp indirme simgesini deneyebilirsin.
+  published: true
+
+payment:
+  organization: demo
+  locale: tr
+  source_key: plan-payment
+  title: Ödeme alındı, plan güncellenmedi
+  terms: ödeme ücret kart çekim tahsil plan abonelik paket hesap payment charged billing
+  body: Önce ödeme kaydı ve hesap planı birlikte kontrol edilir.
+  reply: Aynı işlem için yeniden ödeme yapma ve temsilciye aktar.
+  published: true
+
+mobile:
+  organization: demo
+  locale: tr
+  source_key: mobile-session
+  title: Mobil uygulamada oturumun kapanması
+  terms: mobil uygulama telefon oturum giriş kapanıyor parola güncelleme
+  body: Önce uygulama ve işletim sistemi sürümlerini kontrol edin.
+  reply: Önce uygulamanın ve işletim sisteminin sürümünü kontrol et.
+  published: true
+
+team:
+  organization: demo
+  locale: tr
+  source_key: team-member
+  title: Çalışma alanına ekip üyesi ekleme
+  terms: ekip üye kullanıcı davet yeni temsilci requester team member invite workspace
+  body: Yöneticiler Ekip üyeleri sayfasından üye ekleyebilir.
+  reply: Yönetici hesabıyla Ekip üyeleri sayfasını açıp yeni üyeyi ekleyebilirsin.
+  published: true

@@ -5,6 +5,7 @@
     <div><div class="eyebrow"><%= l(Time.current, format: "%d %B %Y").upcase %></div><h1><%= t("tickets.inbox") %> <span class="heading-count"><%= @tickets.size %></span></h1><p class="page-subtitle"><%= t("tickets.inbox_subtitle") %></p></div>
     <%= link_to new_ticket_path, class: "button button-primary" do %><span class="button-plus">+</span><%= t("tickets.new_ticket") %><% end %>
   </div>
+  <%= render "shared/assistant_entry" if current_user.requester? %>
   <% if current_user.support_staff? %>
     <div class="stat-grid">
       <div class="stat-card"><div class="stat-top"><span><%= t("tickets.active") %></span><span class="stat-icon icon-indigo">▤</span></div><strong><%= @active_count %></strong><small><%= t("tickets.team_queue") %></small></div>

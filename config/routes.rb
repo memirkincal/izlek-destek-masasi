@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
   resources :team_members, only: %i[index create]
+  resources :knowledge_articles, only: %i[index new create edit update]
   get "yardimci", to: "support_agent#show", as: :support_agent
   post "yardimci", to: "support_agent#respond"
 

@@ -1,0 +1,13 @@
+<% content_for :title, "#{t('knowledge.title')} — İzlek" %>
+<% content_for :page_heading, t("knowledge.title") %>
+<section class="page-content knowledge-page">
+  <div class="page-heading-row"><div><div class="eyebrow"><%= t("knowledge.eyebrow") %></div><h1><%= t("knowledge.title") %></h1><p class="page-subtitle"><%= t("knowledge.subtitle") %></p></div><% if current_user.admin? %><%= link_to t("knowledge.add"), new_knowledge_article_path(language: @locale), class: "button button-primary" %><% end %></div>
+  <div class="knowledge-toolbar"><div class="knowledge-language-tabs"><%= link_to "Türkçe", knowledge_articles_path(language: "tr"), class: @locale == "tr" ? "selected" : "" %><%= link_to "English", knowledge_articles_path(language: "en"), class: @locale == "en" ? "selected" : "" %></div><span><%= t("knowledge.published_count", count: @articles.count(&:published?)) %> · <%= t("knowledge.draft_count", count: @articles.count { |article| !article.published? }) %></span></div>
+  <div class="knowledge-list">
+    <% @articles.each do |article| %>
+      <article class="knowledge-card"><div class="knowledge-card-top"><span class="knowledge-status <%= article.published? ? 'is-published' : 'is-draft' %>"><%= t(article.published? ? "knowledge.published" : "knowledge.draft") %></span><small><%= t("knowledge.updated_at", date: l(article.updated_at, format: :short)) %></small></div><h2><%= article.title %></h2><p><%= article.body %></p><div class="knowledge-card-footer"><span><%= t("knowledge.answer_preview") %>: <%= truncate(article.reply, length: 105) %></span><% if current_user.admin? %><%= link_to t("knowledge.edit"), edit_knowledge_article_path(article), class: "button button-secondary button-small" %><% end %></div></article>
+    <% end %>
+    <% if @articles.empty? %><div class="knowledge-empty"><strong><%= t("knowledge.empty_title") %></strong><p><%= t("knowledge.empty_body") %></p></div><% end %>
+  </div>
+  <p class="knowledge-note"><%= t("knowledge.published_note") %></p>
+</section>

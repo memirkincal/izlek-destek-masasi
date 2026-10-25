@@ -29,6 +29,10 @@ Yönetici, temsilci ve talep sahibi rolleri vardır. Talep sahipleri yalnızca k
 
 Gemini modu etkin olduğunda soru ve yerel bilgi bankası Google Gemini API'ye gönderilir. Maskeleme yalnızca bilinen örüntüleri yakalar ve her kişisel veriyi bulmayı garanti etmez; demo sırasında yalnızca hayalî veriler kullanın. Anahtarı kaynak koduna veya GitHub'a koymayın; `GEMINI_API_KEY` ortam değişkeni ya da dağıtım platformunun gizli değişken ayarını kullanın. Gemini modu kapalıyken ürün tamamen yerel, kural tabanlı eşleştirmeyle çalışır.
 
+### İki giriş ve düzenlenebilir bilgi bankası
+
+Giriş ekranında **Talep sahibi** ve **Destek ekibi** seçenekleri vardır; iki seçenek aynı hesap sistemiyle doğru role yönlendirir. Talep sahibi ana sayfasında ve yeni talep formunda **Yapay zekâya sor** çağrısını görür. Destek ekibi **Bilgi bankası** ekranını açabilir; yönetici kurumuna ait Türkçe/İngilizce kaynakları taslak olarak ekler, düzenler ve yayınlar. Temsilci kaynakları okuyabilir. Yalnızca yayınlanmış kayıtlar yerel eşleştirmeye ve Gemini çağrısına katılır. `config/support_knowledge.yml` mevcut kurumların veritabanı geçişinde ve yeni kurum oluşturulurken başlangıç kaynaklarını sağlar; sonraki düzenlemeler veritabanında saklanır.
+
 ### Araştırma — Fortune 500 ve SaaS
 
 Veriler Fortune'un 2025 ABD Fortune 500 listesi (2024 mali yılı) ile Zylo'nun 2025 SaaS Management Index raporundandır. Fortune 500 şirketleri **gelire** göre sıralanır; bu listeyi tek bir “şirket değerlemesi” aralığı gibi okumamak gerekir. Halka açık şirketlerin piyasa değeri fiyat ve tarihe göre değişir; özel şirketlerin karşılaştırılabilir piyasa değeri çoğu zaman yayımlanmaz.
@@ -156,6 +160,8 @@ There are administrator, agent, and requester roles. Requesters see only their o
 İzlek Assist lets a requester describe an issue in free text. When `GEMINI_API_KEY` is configured, the app sends the message and local knowledge base to Gemini 3.5 Flash-Lite after masking recognized sensitive patterns. Gemini returns a structured source ID and draft or a handoff decision; Rails validates the source ID. Missing sources create a ticket. Without a key, local matching remains available; failed Gemini calls use a clearly labeled local fallback. Support staff see related tickets and source-backed reply drafts. Internal notes stay hidden from requesters, and sensitive number or secret patterns in public replies require explicit confirmation.
 
 When Gemini mode is enabled, the request and local knowledge base are sent to Google's Gemini API. Masking detects known patterns only and cannot guarantee removal of every personal detail; use fictional demo data only. Keep the key out of source code and GitHub; configure `GEMINI_API_KEY` as an environment variable or deployment secret. When Gemini mode is disabled, the app uses local rule-based matching.
+
+The sign-in screen offers requester and support-team entrances backed by the existing account roles. Requesters see a prominent **Ask AI** action on the home page and new-ticket form. Staff can read the organization's knowledge base; administrators can create, edit, draft, and publish localized sources. Only published database records for the current organization and locale are used for matching or sent to Gemini. The YAML file supplies initial templates for existing and newly created organizations.
 
 ### Fortune 500 research
 

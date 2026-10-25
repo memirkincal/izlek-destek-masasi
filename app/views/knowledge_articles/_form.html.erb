@@ -1,0 +1,10 @@
+<%= form_with model: article, class: "form-card knowledge-form" do |form| %>
+  <% if article.errors.any? %><div class="form-errors" role="alert"><strong><%= t("errors.form_title") %></strong><ul><% article.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div><% end %>
+  <div class="field"><%= form.label :locale, t("knowledge.language") %><%= form.select :locale, [["Türkçe", "tr"], ["English", "en"]], {}, class: "select-input" %></div>
+  <div class="field"><%= form.label :title, t("knowledge.article_title") %><%= form.text_field :title, required: true, maxlength: 120 %></div>
+  <div class="field"><%= form.label :terms, t("knowledge.terms") %><%= form.text_area :terms, required: true, maxlength: 1_000, rows: 2 %><small><%= t("knowledge.terms_hint") %></small></div>
+  <div class="field"><%= form.label :body, t("knowledge.body") %><%= form.text_area :body, required: true, maxlength: 4_000, rows: 5 %><small><%= t("knowledge.body_hint") %></small></div>
+  <div class="field"><%= form.label :reply, t("knowledge.reply") %><%= form.text_area :reply, required: true, maxlength: 4_000, rows: 4 %><small><%= t("knowledge.reply_hint") %></small></div>
+  <label class="knowledge-publish-control"><%= form.check_box :published %><span><strong><%= t("knowledge.publish_now") %></strong><small><%= t("knowledge.publish_hint") %></small></span></label>
+  <div class="form-footer"><span><%= t("knowledge.save_hint") %></span><%= form.submit t("knowledge.save"), class: "button button-primary" %></div>
+<% end %>

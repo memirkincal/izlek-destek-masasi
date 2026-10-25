@@ -57,11 +57,15 @@ class TicketAssistant
   end
 
   def knowledge_articles
-    @knowledge_articles ||= YAML.safe_load_file(
-      Rails.root.join("config/support_knowledge.yml"),
-      permitted_classes: [],
-      aliases: false
-    ).fetch(I18n.locale.to_s)
+    @knowledge_articles ||= @organization.knowledge_articles.published.where(locale: I18n.locale.to_s).order(:id).map do |article|
+      {
+        "id" => article.source_key,
+        "title" => article.title,
+        "terms" => article.terms,
+        "body" => article.body,
+        "reply" => article.reply
+      }
+    end
   end
 
   private

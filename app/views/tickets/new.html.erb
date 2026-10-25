@@ -2,6 +2,7 @@
 <% content_for :page_heading, t("tickets.new_ticket") %>
 <section class="page-content narrow-page">
   <div class="page-heading-row"><div><div class="eyebrow"><%= t("tickets.inbox").upcase %> / <%= t("tickets.new_ticket").upcase %></div><h1><%= t("tickets.new_heading") %></h1><p class="page-subtitle"><%= t("tickets.new_subtitle") %></p></div><%= link_to "← #{t('tickets.back_inbox')}", root_path, class: "back-link" %></div>
+  <%= render "shared/assistant_entry" if current_user.requester? %>
   <%= form_with model: @ticket, class: "form-card" do |form| %>
     <% if @ticket.errors.any? %><div class="form-errors" role="alert"><strong><%= t("errors.form_title") %></strong><ul><% @ticket.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div><% end %>
     <div class="requester-summary"><span class="avatar avatar-customer"><%= initials(current_user.name) %></span><span><small><%= t("tickets.requester") %></small><strong><%= current_user.name %></strong><em><%= current_user.email_address %></em></span><span class="verified-mark">✓</span></div>
