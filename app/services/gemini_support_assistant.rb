@@ -5,8 +5,10 @@ require "uri"
 
 class GeminiSupportAssistant
   ENDPOINT = URI("https://generativelanguage.googleapis.com/v1beta/interactions")
-  DEFAULT_MODEL = "gemini-3.8-flash"
+  DEFAULT_MODEL = "gemini-3.5-flash-lite"
   MAX_OUTPUT_TOKENS = 300
+  MAX_ATTEMPTS = 3
+  RETRYABLE_STATUSES = [ 408, 429, 500, 502, 503, 504 ].freeze
 
   Result = Struct.new(:article_id, :answer, :reason, keyword_init: true) do
     def handoff?
@@ -33,15 +35,7 @@ class GeminiSupportAssistant
   def call
     raise Unavailable, "Gemini API key is not configured" unless self.class.configured?
 
-    response = Net::HTTP.start(
-      ENDPOINT.host,
-      ENDPOINT.port,
-      use_ssl: true,
-      open_timeout: 4,
-      read_timeout: 20
-    ) do |http|
-      http.request(request)
-    end
+    response = fetch_response
 
     raise Unavailable, "Gemini API returned HTTP #{response.code}" unless response.is_a?(Net::HTTPSuccess)
 
@@ -56,6 +50,24 @@ class GeminiSupportAssistant
   end
 
   private
+
+  def fetch_response
+    MAX_ATTEMPTS.times do |attempt|
+      response = Net::HTTP.start(
+        ENDPOINT.host,
+        ENDPOINT.port,
+        use_ssl: true,
+        open_timeout: 4,
+        read_timeout: 20
+      ) do |http|
+        http.request(request)
+      end
+
+      return response unless RETRYABLE_STATUSES.include?(response.code.to_i) && attempt < MAX_ATTEMPTS - 1
+
+      sleep((2**attempt) + rand * 0.25)
+    end
+  end
 
   def request
     request = Net::HTTP::Post.new(ENDPOINT)
