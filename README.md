@@ -25,7 +25,7 @@ Yönetici, temsilci ve talep sahibi rolleri vardır. Talep sahipleri yalnızca k
 
 ### Bu haftanın yönü — kaynaklı destek ve güvenli insan devri
 
-İzlek Yardımcısı talep sahibinin sorunu serbest metinle anlatmasına izin verir. `GEMINI_API_KEY` ayarlıysa, bilinen hassas örüntüler maskelendikten sonra mesaj ve yerel bilgi bankası Gemini 3.8 Flash'a gönderilir. Model, yapılandırılmış yanıtta kaynak kimliği ve yanıt taslağı ya da insan devri kararı döndürür; Rails kaynak kimliğini doğrular. Uygun kaynak yoksa yeni ticket açılır. API anahtarı yoksa yerel eşleştirici çalışır; Gemini çağrısı başarısızsa yedek yanıt açıkça etiketlenir. Destek ekibi ticket ayrıntısında benzer talepleri ve kaynaklı yanıt taslaklarını görür. Ekip içi notlar talep sahiplerine gösterilmez; müşteriye gidecek yanıtta hassas sayı veya sır örüntüsü varsa açık onay istenir.
+İzlek Yardımcısı talep sahibinin sorunu serbest metinle anlatmasına izin verir. `GEMINI_API_KEY` ayarlıysa, bilinen hassas örüntüler maskelendikten sonra mesaj ve yerel bilgi bankası Gemini 3.5 Flash-Lite'a gönderilir. Model, yapılandırılmış yanıtta kaynak kimliği ve yanıt taslağı ya da insan devri kararı döndürür; Rails kaynak kimliğini doğrular. Uygun kaynak yoksa yeni ticket açılır. API anahtarı yoksa yerel eşleştirici çalışır; Gemini çağrısı başarısızsa yedek yanıt açıkça etiketlenir. Destek ekibi ticket ayrıntısında benzer talepleri ve kaynaklı yanıt taslaklarını görür. Ekip içi notlar talep sahiplerine gösterilmez; müşteriye gidecek yanıtta hassas sayı veya sır örüntüsü varsa açık onay istenir.
 
 Gemini modu etkin olduğunda soru ve yerel bilgi bankası Google Gemini API'ye gönderilir. Maskeleme yalnızca bilinen örüntüleri yakalar ve her kişisel veriyi bulmayı garanti etmez; demo sırasında yalnızca hayalî veriler kullanın. Anahtarı kaynak koduna veya GitHub'a koymayın; `GEMINI_API_KEY` ortam değişkeni ya da dağıtım platformunun gizli değişken ayarını kullanın. Gemini modu kapalıyken ürün tamamen yerel, kural tabanlı eşleştirmeyle çalışır.
 
@@ -86,7 +86,7 @@ Gemini API ile çalıştırmak için AI Studio'dan bir API anahtarı oluşturun.
 
 ```powershell
 $env:GEMINI_API_KEY = "YOUR_NEW_API_KEY"
-$env:GEMINI_MODEL = "gemini-3.8-flash"
+$env:GEMINI_MODEL = "gemini-3.5-flash-lite"
 bin/rails server
 ```
 
@@ -124,7 +124,7 @@ Render hesabı ve veritabanı bağlantısı için hesap sahibinin erişimi gerek
 ### Yapamadıklarım / kapsam dışı
 
 - Canlı URL ve `/up` sağlık kontrolü doğrulandı. Geliştirme/test ortamında kayıt, ekip üyesi ekleme ve talep akışları test edilir. Üretimde iki ayrı kurumla tenant izolasyonunu teslim demosundan önce elle sınayın.
-- Gemini bağlantı yolu canlıya alındı, ancak Render'da `GEMINI_API_KEY` henüz yok ve gerçek API çağrısı doğrulanmadı. Yardımcı şu anda yerel bilgi bankası modundadır. Sunumdan önce güvenli yeni anahtarı ayarlayıp bir kaynaklı yanıtı ve kaynak bulunmayan handoff'u elle deneyin.
+- Render'da yeni Gemini anahtarı gizli değişken olarak ayarlı. 26 Ekim 2026 canlı testinde kaynaklı fatura yanıtı Gemini'den geldi; kaynaksız hayalî soru #0001 destek talebine dönüştü. Gemini geçici olarak hata verirse yerel yedek açıkça etiketlenir.
 - Gemini'ye gönderilen hassas örüntü maskesi eksiksiz PII koruması değildir. Ücretsiz API katmanının güncel veri kullanımı ve kotaları değişebilir; yalnızca hayalî demo verisi kullanın.
 - Render ücretsiz servisi boşta kaldığında uyur; ilk istek yavaş açılabilir. GitHub sağlayıcısı Render'a bağlanmadığından yeni commitler otomatik dağıtılmaz; serviste Manual Deploy gerekir.
 - Ticari Zendesk kod sayısı kamuya açık değil; 300.000 LOC yalnızca belirtilmiş tahmindir.
@@ -153,7 +153,7 @@ There are administrator, agent, and requester roles. Requesters see only their o
 
 ### This week's direction — source-backed assistance and safe handoff
 
-İzlek Assist lets a requester describe an issue in free text. When `GEMINI_API_KEY` is configured, the app sends the message and local knowledge base to Gemini 3.8 Flash after masking recognized sensitive patterns. Gemini returns a structured source ID and draft or a handoff decision; Rails validates the source ID. Missing sources create a ticket. Without a key, local matching remains available; failed Gemini calls use a clearly labeled local fallback. Support staff see related tickets and source-backed reply drafts. Internal notes stay hidden from requesters, and sensitive number or secret patterns in public replies require explicit confirmation.
+İzlek Assist lets a requester describe an issue in free text. When `GEMINI_API_KEY` is configured, the app sends the message and local knowledge base to Gemini 3.5 Flash-Lite after masking recognized sensitive patterns. Gemini returns a structured source ID and draft or a handoff decision; Rails validates the source ID. Missing sources create a ticket. Without a key, local matching remains available; failed Gemini calls use a clearly labeled local fallback. Support staff see related tickets and source-backed reply drafts. Internal notes stay hidden from requesters, and sensitive number or secret patterns in public replies require explicit confirmation.
 
 When Gemini mode is enabled, the request and local knowledge base are sent to Google's Gemini API. Masking detects known patterns only and cannot guarantee removal of every personal detail; use fictional demo data only. Keep the key out of source code and GitHub; configure `GEMINI_API_KEY` as an environment variable or deployment secret. When Gemini mode is disabled, the app uses local rule-based matching.
 
@@ -212,7 +212,7 @@ To enable Gemini locally, create an API key in AI Studio. In Windows PowerShell,
 
 ```powershell
 $env:GEMINI_API_KEY = "YOUR_NEW_API_KEY"
-$env:GEMINI_MODEL = "gemini-3.8-flash"
+$env:GEMINI_MODEL = "gemini-3.5-flash-lite"
 bin/rails server
 ```
 
@@ -248,7 +248,7 @@ Access to the Render account and database connection is required; keep secret va
 ### What is not implemented / limitations
 
 - The live URL and `/up` health check are verified. Registration, team-member creation, and ticket workflow are tested locally; tenant isolation across two production organizations should still be demonstrated manually before the presentation.
-- The Gemini request path is deployed, but `GEMINI_API_KEY` is not set on Render and a real API call has not been verified. The assistant currently uses the local knowledge base. Before presenting live AI, set a safe new key as a secret and manually exercise one source-backed answer and one no-source handoff.
+- A new Gemini key is configured only in Render's secret environment. On 26 October 2026, the live assistant returned a Gemini answer with a validated invoice source; an unrelated fictional question created ticket #0001 for human support. Google initially returned HTTP 503 with the previous model, so the app now uses Flash-Lite and retries temporary failures. The UI explicitly labels the local fallback if Gemini is unavailable again.
 - Gemini's sensitive-pattern masking is not complete PII protection. Free API data-use terms and quotas can change; use fictional demo data only.
 - The Render free service sleeps after inactivity, so the first request may be slow. New commits are not deployed automatically because a GitHub provider was not connected; use Manual Deploy on the service.
 - Zendesk's actual LOC is not public; 300,000 LOC is an estimate only.
